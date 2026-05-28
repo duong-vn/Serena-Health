@@ -1,0 +1,38 @@
+.desktop-shell-page {
+  --sidebar-width: 220px;
+  --surface-gap: 6px;
+  --header-height: 60px;
+  min-height: 100vh;
+  background: #fafafa;
+  color: #244a6b;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.desktop-shell-main {
+  position: fixed;
+  top: calc(6px + var(--header-height) + 6px);
+  right: 6px;
+  bottom: 8px;
+  left: calc(8px + var(--sidebar-width) + var(--surface-gap));
+  overflow: auto;
+  border-radius: 28px;
+  background: #fff;
+}
+
+@media (max-width: 900px) {
+  .desktop-shell-page {
+    min-width: 900px;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

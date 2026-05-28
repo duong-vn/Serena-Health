@@ -1,0 +1,41 @@
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pagination button {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: #dcebff;
+  color: #244a6b;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pagination button:hover:not(:disabled),
+.pagination button.active {
+  background: #8dc1ff;
+  color: #fff;
+}
+
+.pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

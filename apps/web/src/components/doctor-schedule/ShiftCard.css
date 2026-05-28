@@ -1,0 +1,65 @@
+.shift-card {
+  background: #F3F6FF;
+  border-left: 4px solid #8DC1FF;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.shift-card.selected {
+  background: #DBE4FF;
+  border-left: 4px solid #6CAFFF;
+  box-shadow: 0 4px 12px rgba(141, 193, 255, 0.1);
+}
+
+
+.shift-main {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.shift-title { 
+  margin: 0; 
+  font-size: 14px; 
+  font-weight: 500; 
+  color: #0A0A0A; }
+.shift-time { 
+  color: #6A7282; 
+  font-size: 12px; 
+  font-weight: 400;
+  margin: 4px 0; }
+.shift-badge {
+  background: white;
+  color: #10B981;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  height: fit-content;
+}
+.shift-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.shift-footer a { color: black; font-weight: 600; }
+
+.view-detail-btn { 
+  background: #E0E7FF;
+  color: #3730A3;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+}
+.view-detail-text {
+  align-items: center;
+  color: #0A0A0A;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: underline;
+  line-height: 16px;
+  word-wrap: break-word;
+  cursor: pointer;
+  transition: 0.2s;
+}

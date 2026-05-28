@@ -1,0 +1,916 @@
+/* ==========================================================================
+   APPOINTMENT LIST TAB — PREMIUM CSS
+   Mirrors PatientListTab layout exactly. All layout classes reused.
+   ========================================================================== */
+
+/* Main List Wrapper */
+.appointment-list-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: clamp(20px, 3.03vh, 31px) clamp(20px, 2.15vw, 31px);
+  background: #ffffff;
+  min-height: 100%;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #244A6B;
+}
+
+/* ==========================================================================
+   DETAIL VIEW — MODE SWITCHER TAB GROUP
+   ========================================================================== */
+.appt-detail-mode-tabs {
+  display: flex;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.appt-mode-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.appt-mode-tab:hover {
+  background: #E2E8F0;
+  color: #334155;
+}
+
+.appt-mode-tab.active {
+  background: #ffffff;
+  color: #244A6B;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(36, 74, 107, 0.1);
+}
+
+/* ==========================================================================
+   READ-ONLY EMR FIELDS (View Mode)
+   ========================================================================== */
+.emr-readonly-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.emr-readonly-text {
+  margin: 0;
+  font-size: 14px;
+  color: #244A6B;
+  line-height: 1.6;
+  background: #F8FAFC;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+  font-weight: 500;
+}
+
+.emr-readonly-text.diagnosis-highlight {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border-color: rgba(59, 130, 246, 0.2);
+  font-weight: 700;
+  border-left: 4px solid #3B82F6;
+}
+
+/* Styled prescription list in view mode */
+.emr-prescription-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.emr-drug-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #FAFAFA;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  color: #244A6B;
+  font-weight: 500;
+}
+
+.drug-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  background: #E6EFFE;
+  color: #2563EB;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Empty state when no notes exist */
+.emr-no-notes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 24px;
+  text-align: center;
+  flex: 1;
+}
+
+.emr-no-notes p {
+  margin: 0;
+  font-size: 14px;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.emr-switch-btn {
+  background: #E6EFFE;
+  color: #244A6B;
+  border: 1px solid rgba(36, 74, 107, 0.12);
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.emr-switch-btn:hover {
+  background: #BFDBFE;
+  color: #1D4ED8;
+  transform: translateY(-1px);
+}
+
+
+
+/* ==========================================================================
+   1. PAGE HEADER & TIME SELECTOR
+   ========================================================================== */
+.appointment-list-tab-content .patient-tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.appointment-list-tab-content .patient-tab-header .tab-titles h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #244A6B;
+  letter-spacing: -0.5px;
+  margin: 0 0 4px 0;
+}
+
+.appointment-list-tab-content .patient-tab-header .tab-titles p {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(74, 85, 104, 0.7);
+  line-height: 1.5;
+}
+
+.appointment-list-tab-content .header-right-filter {
+  flex-shrink: 0;
+}
+
+.appointment-list-tab-content .time-filter-dropdown {
+  display: flex;
+  align-items: center;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 8px 14px;
+  gap: 8px;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.01);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.appointment-list-tab-content .time-filter-dropdown:hover {
+  background: #E2E8F0;
+  border-color: #CBD5E1;
+}
+
+.appointment-list-tab-content .time-filter-dropdown select {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: #244A6B;
+  cursor: pointer;
+  font-family: inherit;
+  appearance: none;
+  padding-right: 18px;
+}
+
+.appointment-list-tab-content .time-filter-dropdown .time-icon {
+  color: #475569;
+  flex-shrink: 0;
+}
+
+.appointment-list-tab-content .time-filter-dropdown .chevron-icon {
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+  color: #475569;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   2. METRIC CARDS ROW
+   ========================================================================== */
+.appointment-list-tab-content .metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+/* ==========================================================================
+   3. TOOLBAR — SEARCH + FILTERS + ADD BUTTON
+   ========================================================================== */
+.appointment-list-tab-content .patient-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 25px;
+  margin-bottom: 16px;
+}
+
+.appointment-list-tab-content .patient-toolbar-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.appointment-list-tab-content .sort-selector-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ==========================================================================
+   4. DATA TABLE FRAME
+   ========================================================================== */
+.appointment-list-tab-content .patient-table-frame {
+  background: #ffffff;
+  border: 1px solid #DCEBFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(36, 74, 107, 0.05);
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.appointment-list-tab-content .patient-table-frame .data-table-wrap {
+  border-radius: 16px 16px 0 0;
+}
+
+.appointment-list-tab-content .patient-table-frame .data-table th {
+  background: #E6EFFE;
+  color: #244A6B;
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #DCEBFF;
+}
+
+.appointment-list-tab-content .patient-table-frame .data-table td {
+  border-bottom: 1px solid #F1F5F9;
+  color: #244A6B;
+}
+
+/* Patient cell layout with avatar */
+.appointment-list-tab-content .doctor-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.appointment-list-tab-content .doctor-cell strong {
+  display: block;
+  color: #2d3748;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.appointment-list-tab-content .doctor-cell span {
+  display: block;
+  margin-top: 2px;
+  color: #244a6b;
+  font-size: 13px;
+}
+
+.appointment-list-tab-content .doctor-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(36, 74, 107, 0.12);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.appointment-list-tab-content .doctor-avatar svg {
+  width: 62%;
+  height: 62%;
+  fill: #244a6b;
+}
+
+.appointment-list-tab-content .table-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+/* Time Highlight Badge */
+.time-highlight {
+  background: #EFF6FF;
+  color: #2563EB;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border: 1px solid rgba(59, 130, 246, 0.08);
+}
+
+.status-pill {
+  display: inline-flex;
+  min-width: 96px;
+  min-height: 28px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 100px;
+  padding: 4px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-pill.waiting {
+  border-color: #A7F3D0;
+  background: #E6FDF0;
+  color: #059669;
+}
+
+.status-pill.processing {
+  border-color: #FFE0B2;
+  background: #FFF8E1;
+  color: #E65100;
+}
+
+.status-pill.done {
+  border-color: #E9D5FF;
+  background: #F3E8FF;
+  color: #7C3AED;
+}
+
+/* ==========================================================================
+   5. PAGINATION — identical to Patient List
+   ========================================================================== */
+.appointment-list-tab-content .patient-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+  padding: 16px 0;
+}
+
+.appointment-list-tab-content .patient-pagination .pag-nav-btn,
+.appointment-list-tab-content .patient-pagination .pag-num-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: #E6EFFE;
+  color: #3B82F6;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.appointment-list-tab-content .patient-pagination .pag-nav-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.appointment-list-tab-content .patient-pagination .pag-nav-btn .pag-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.appointment-list-tab-content .patient-pagination .pag-nav-btn:hover:not(:disabled),
+.appointment-list-tab-content .patient-pagination .pag-num-btn:hover:not(.active) {
+  background: #BFDBFE;
+  color: #2563EB;
+}
+
+.appointment-list-tab-content .patient-pagination .pag-nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #F7FAFC;
+  color: #A0AEC0;
+}
+
+.appointment-list-tab-content .patient-pagination .pag-num-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.appointment-list-tab-content .patient-pagination .pag-num-btn.active {
+  background: #3B82F6;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+}
+
+/* ==========================================================================
+   6. TOAST NOTIFICATION
+   ========================================================================== */
+.emr-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #244A6B;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(220, 235, 255, 0.3);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  animation: toast-reveal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes toast-reveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   7. CLINICAL DETAIL / INTAKE WORKSPACE
+   ========================================================================== */
+.appointment-detail-page-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: clamp(20px, 3.03vh, 32px) clamp(20px, 2.15vw, 32px);
+  background: #FAFAFA;
+  min-height: 100%;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.doctor-detail-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.doctor-form-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.doctor-detail-title h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #244A6B;
+}
+
+.doctor-detail-title p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: #718096;
+}
+
+/* Hero Section: Patient Card & Info Grid */
+.doctor-detail-hero {
+  border: 1px solid #DCEBFF;
+  border-radius: 28px;
+  background: #ffffff;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(36, 74, 107, 0.05);
+}
+
+.doctor-overview-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-right: 1px dashed rgba(36, 74, 107, 0.12);
+  padding-right: 20px;
+}
+
+.doctor-detail-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 32px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.doctor-overview-copy h2 {
+  margin: 0;
+  color: #244A6B;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.doctor-overview-copy p {
+  margin: 6px 0 0;
+  color: #718096;
+  font-size: 13px;
+}
+
+.allergy-badge-wrapper {
+  margin-top: 10px;
+}
+
+.doctor-rating-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.doctor-rating-pill.allergy-alert {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.12);
+}
+
+.doctor-rating-pill.allergy-none {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid rgba(22, 163, 74, 0.12);
+}
+
+.doctor-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  align-content: center;
+}
+
+.doctor-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doctor-info-item span {
+  font-size: 12px;
+  color: #718096;
+  font-weight: 500;
+}
+
+.doctor-info-item strong {
+  font-size: 14px;
+  color: #244A6B;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   8. CLINICAL INTAKE FORM GRID
+   ========================================================================== */
+.clinical-intake-form-grid {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.clinical-intake-left-card,
+.clinical-intake-right-form {
+  background: #ffffff;
+  border: 1px solid #DCEBFF;
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(36, 74, 107, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.clinical-intake-left-card h3,
+.clinical-intake-right-form h3 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #244A6B;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #F1F5F9;
+  padding-bottom: 12px;
+}
+
+.clinical-item-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.clinical-item-field .field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clinical-item-field .field-complaint {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #3B82F6;
+  background: #EFF6FF;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border-left: 4px solid #3B82F6;
+}
+
+.clinical-item-field .field-history {
+  margin: 0;
+  font-size: 13.5px;
+  color: #244A6B;
+  line-height: 1.5;
+  background: #F8FAFC;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+  font-weight: 500;
+}
+
+/* Form Input Groups */
+.form-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-input-group label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #244A6B;
+}
+
+.form-input-group label .required-star {
+  color: #EF4444;
+}
+
+.form-input-group textarea {
+  border: 1px solid #DCEBFF;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 13.5px;
+  color: #244A6B;
+  background: #FAFAFA;
+  font-family: inherit;
+  line-height: 1.5;
+  outline: none;
+  resize: vertical;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.form-input-group textarea:focus {
+  border-color: #3B82F6;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08);
+}
+
+.form-input-group textarea:disabled {
+  background: #F8FAFC;
+  color: #4A5568;
+  border-color: #E2E8F0;
+  cursor: not-allowed;
+  font-weight: 500;
+}
+
+.form-input-group textarea::placeholder {
+  color: #A0AEC0;
+}
+
+/* ==========================================================================
+   9. RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .appointment-list-tab-content .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .doctor-detail-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .doctor-overview-card {
+    border-right: none;
+    border-bottom: 1px dashed rgba(36, 74, 107, 0.12);
+    padding-right: 0;
+    padding-bottom: 20px;
+  }
+
+  .clinical-intake-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .appointment-list-tab-content .patient-tab-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .appointment-list-tab-content .patient-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .appointment-list-tab-content .patient-toolbar-filters {
+    flex-wrap: wrap;
+  }
+}
+
+/* ==========================================================================
+   10. EMR MODAL POPUP BACKDROP & CONTAINER
+   ========================================================================== */
+.emr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: modal-fade-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.emr-modal-container {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 580px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modal-slide-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(220, 235, 255, 0.5);
+}
+
+.emr-modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #EFF6FF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.emr-modal-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #244A6B;
+  margin: 0;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #718096;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.close-modal-btn:hover {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+.emr-modal-patient-info {
+  background: #FAFDFF;
+  border-bottom: 1px solid #EFF6FF;
+  padding: 12px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.emr-modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-input-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #244A6B;
+}
+
+.form-input-group textarea {
+  width: 100%;
+  border: 1px solid #DCEBFF;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: #1E293B;
+  outline: none;
+  resize: vertical;
+  transition: all 0.2s;
+}
+
+.form-input-group textarea:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.required-star {
+  color: #EF4444;
+  margin-left: 2px;
+}
+
+.emr-modal-footer {
+  padding: 18px 24px;
+  border-top: 1px solid #EFF6FF;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #FAFDFF;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Fix stacking context for full-screen modal overlays to display above layout headers */
+.desktop-shell-main:has(.emr-modal-overlay) {
+  z-index: 99999 !important;
+}

@@ -1,0 +1,151 @@
+.manager-report-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px;
+}
+
+.report-heading-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.report-heading-row h1 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.report-heading-row p {
+  margin: 6px 0 0;
+  color: #718096;
+  font-size: 13px;
+}
+
+.report-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.report-filters {
+  display: flex;
+  gap: 12px;
+}
+
+
+.export-excel-button {
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 8px;
+  background: #d8f8df;
+  color: #276749;
+  padding: 0 16px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.export-excel-button:hover {
+  background: #baf3c5;
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.report-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #91c3ff;
+  border-radius: 20px;
+  background: #fff;
+  padding: 20px 24px;
+}
+
+.report-card h2 {
+  margin: 0 0 16px;
+  color: #244A6B;
+  font-size: 16px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.report-chart-frame {
+  width: 100%;
+  height: 300px;
+  min-height: 300px;
+}
+
+.report-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+  color: #4a5568;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.report-bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.pie-frame {
+  height: 220px;
+  min-height: 220px;
+}
+
+.pie-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.horizontal-bar-frame {
+  height: 260px;
+  min-height: 260px;
+}
+
+/* Responsiveness */
+@media (max-width: 1200px) {
+  .report-bottom-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .report-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .report-filters {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .filter-select {
+    flex: 1;
+  }
+  .export-excel-button {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,78 @@
+.app-header {
+  position: fixed;
+  top: 6px;
+  right: 6px;
+  left: calc(8px + var(--sidebar-width) + var(--surface-gap));
+  z-index: 10;
+  height: var(--header-height);
+  border-radius: 28px;
+  background: #f3f6ff;
+}
+
+.header-profile {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24px;
+  padding-right: 35px;
+}
+
+.notification-button {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #000;
+  cursor: pointer;
+}
+
+.notification-button svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.profile-text {
+  min-width: 98px;
+}
+
+.profile-text strong {
+  display: block;
+  color: #000;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.profile-text span {
+  display: block;
+  margin-top: 3px;
+  color: #718096;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.profile-avatar {
+  width: 33px;
+  height: 33px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #d7e3f2;
+  color: #718096;
+}
+
+.profile-avatar svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+

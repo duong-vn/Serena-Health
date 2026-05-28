@@ -1,0 +1,1299 @@
+.live-consultation-container {
+  display: grid;
+  grid-template-columns: 280px 1fr 340px;
+  height: 100%;
+  background: #ffffff;
+}
+
+/* 1. Sidebar Hàng đợi */
+.consultation-sidebar {
+  border-right: 1px solid #f1f5f9;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.sidebar-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.01em;
+}
+
+.queue-count {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.case-queue-list {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.case-queue-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  font-family: inherit;
+}
+
+.case-queue-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  border-color: #cbd5e1;
+}
+
+.case-queue-card.active {
+  border-color: #3b82f6;
+  background: #f0f6ff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.case-queue-card h3 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.symptom-preview {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-bottom {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* 2. Chat Panel */
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-right: 1px solid #f1f5f9;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+  height: 70px;
+}
+
+.patient-profile-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.patient-avatar-large {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.patient-profile-summary h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.patient-profile-summary p {
+  margin: 2px 0 0 0;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.status-indicator.online {
+  font-size: 12px;
+  color: #10b981;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-indicator.online::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0);
+  }
+
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.chat-messages-container {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.system-alert {
+  align-self: center;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.16);
+  color: #1d4ed8;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.system-alert svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Bubbles */
+.message-bubble-wrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 75%;
+}
+
+.message-bubble-wrapper.patient {
+  align-self: flex-start;
+}
+
+.message-bubble-wrapper.doctor {
+  align-self: flex-end;
+}
+
+.message-bubble-wrapper.chatbot {
+  align-self: flex-start;
+}
+
+.bot-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #8b5cf6;
+  margin-bottom: 4px;
+  margin-left: 12px;
+}
+
+.message-bubble {
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.message-bubble.patient {
+  background: #ffffff;
+  color: #1e293b;
+  border-bottom-left-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.message-bubble.doctor {
+  background: #3b82f6;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.message-bubble.chatbot {
+  background: #f5f3ff;
+  color: #5b21b6;
+  border: 1px solid #e9d5ff;
+  border-bottom-left-radius: 4px;
+}
+
+.message-bubble p {
+  margin: 0;
+}
+
+.message-time {
+  display: block;
+  font-size: 9px;
+  opacity: 0.7;
+  margin-top: 4px;
+  text-align: right;
+}
+
+/* Chat Input */
+.chat-input-form {
+  padding: 16px 20px;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  height: 70px;
+}
+
+.chat-input-form input {
+  flex: 1;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.chat-input-form input:focus {
+  border-color: #3b82f6;
+}
+
+.send-msg-button {
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.send-msg-button:hover {
+  background: #2563eb;
+}
+
+.send-msg-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* 3. Clinical Workspace (Right) */
+.consultation-tab-outer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+}
+
+.consultation-tab-container {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Left Pane: Sidebar --- */
+.consultation-sidebar-pane {
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  background: #F7F8FA;
+  /* Subtle gray background as per Figma */
+  padding: 24px;
+}
+
+.consultation-title {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #244A6B;
+}
+
+.consultation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.consultation-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(36, 74, 107, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid #F0F4F8;
+}
+
+.consultation-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(36, 74, 107, 0.06);
+}
+
+.consultation-card.active {
+  border-color: #3B82F6;
+  background: #FAFDFF;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+}
+
+.consultation-card-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #E2E8F0;
+  flex-shrink: 0;
+}
+
+.consultation-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.consultation-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.consultation-card-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #2D3748;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.consultation-card-time {
+  font-size: 11px;
+  color: #A0AEC0;
+  flex-shrink: 0;
+}
+
+.consultation-card-message {
+  font-size: 12px;
+  color: #718096;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.consultation-card-badge {
+  align-self: flex-start;
+  background: #8DC1FF;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: 6px;
+}
+
+/* --- Right Pane: Main Area --- */
+.consultation-main-pane {
+  flex: 1;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Empty State */
+.empty-chat-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.empty-avatar-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #E2E8F0;
+}
+
+.empty-chat-state p {
+  font-size: 13px;
+  color: #718096;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Active Chat Placeholder */
+.active-chat-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Chat Header Card */
+.chat-header-card {
+  margin: 20px 20px 0 20px;
+  background: #EAF3FF;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-header-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.chat-header-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #CBD5E1;
+}
+
+.chat-header-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header-details h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.chat-header-details p {
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  color: #64748B;
+}
+
+.view-record-btn {
+  background: #3B82F6;
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.view-record-btn:hover {
+  background: #2563EB;
+}
+
+/* Chat Messages */
+.chat-messages-area {
+  flex: 1;
+  padding: 24px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.chat-message-row {
+  display: flex;
+  width: 100%;
+}
+
+.chat-message-row.patient {
+  justify-content: flex-start;
+}
+
+.chat-message-row.doctor {
+  justify-content: flex-end;
+}
+
+.chat-message-bubble {
+  max-width: 65%;
+  padding: 14px 20px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #334155;
+  border-radius: 20px;
+}
+
+.chat-message-row.patient .chat-message-bubble {
+  background: #F7F8FA;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-message-row.doctor .chat-message-bubble {
+  background: #EAF3FF;
+  border-bottom-right-radius: 4px;
+  color: #244A6B;
+}
+
+/* Chat Footer (Ended) */
+.chat-footer-ended {
+  padding: 24px 20px 32px 20px;
+  border-top: 1px solid #F0F4F8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.ended-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #E2E8F0;
+  color: #64748B;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.ended-badge svg {
+  width: 16px;
+  height: 16px;
+}
+
+.chat-footer-ended p {
+  margin: 0;
+  font-size: 12px;
+  color: #94A3B8;
+}
+
+/* Chat Footer (New / Start Consultation) */
+.chat-footer-new {
+  padding: 24px 20px 32px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-consultation-btn {
+  background: #3B82F6;
+  color: #FFFFFF;
+  border: none;
+  padding: 12px 36px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
+  transition: background 0.2s, transform 0.15s ease;
+}
+
+.start-consultation-btn:hover {
+  background: #2563EB;
+  transform: translateY(-1px);
+}
+
+.start-consultation-btn:active {
+  transform: translateY(1px);
+}
+
+/* Active Chat Layout adjustments */
+.consultation-tab-container.active-chat-mode {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.back-to-list-btn {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748B;
+  transition: all 0.2s ease;
+  margin-right: 12px;
+}
+
+.back-to-list-btn:hover {
+  background: #F1F5F9;
+  color: #1E293B;
+  border-color: #CBD5E1;
+}
+
+.back-to-list-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.end-consultation-btn {
+  background: #3B82F6;
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15);
+}
+
+.end-consultation-btn:hover {
+  background: #2563EB;
+}
+
+/* Actions Tags row */
+.chat-action-tags {
+  display: flex;
+  gap: 12px;
+  padding: 12px 20px;
+  background: #FFFFFF;
+  border-top: 1px solid #F0F4F8;
+  align-items: center;
+}
+
+.action-tag-btn {
+  background: #F8FAFC;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-tag-btn:hover {
+  background: #F1F5F9;
+  color: #1E293B;
+  border-color: #CBD5E1;
+}
+
+/* Chat Input Pill Wrapper */
+.chat-input-pill-wrapper {
+  display: flex;
+  align-items: center;
+  background: #F1F5F9;
+  border-radius: 24px;
+  padding: 6px 16px;
+  flex: 1;
+  gap: 10px;
+  border: 1px solid #E2E8F0;
+}
+
+.chat-input-pill-wrapper input {
+  flex: 1;
+  border: none !important;
+  background: transparent !important;
+  padding: 8px 4px !important;
+  font-size: 13.5px;
+  outline: none;
+  color: #1E293B;
+}
+
+.input-icon-btn {
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.input-icon-btn:hover {
+  color: #64748B;
+}
+
+.input-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Right Clinical Workspace Sidebar */
+.clinical-workspace-sidebar {
+  width: 340px;
+  border-left: 1px solid #F0F4F8;
+  background: #FFFFFF;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.workspace-accordion-section {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.workspace-accordion-section:hover {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+}
+
+.workspace-accordion-section.notes-section {
+  background: #FFFDF5;
+  border-color: #FEF3C7;
+}
+
+.workspace-accordion-section.notes-section:hover {
+  background: #FFFBEB;
+  border-color: #FDE68A;
+}
+
+.workspace-accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.section-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.section-title-wrapper.medical-info-theme {
+  color: #3B82F6;
+}
+
+.section-title-wrapper.history-theme {
+  color: #EF4444;
+}
+
+.section-title-wrapper.exam-theme {
+  color: #10B981;
+}
+
+.section-title-wrapper.consult-theme {
+  color: #8B5CF6;
+}
+
+.section-title-wrapper.notes-theme {
+  color: #D97706;
+}
+
+.section-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.chevron-icon {
+  width: 16px;
+  height: 16px;
+  color: #64748B;
+  transition: transform 0.2s ease;
+}
+
+.chevron-icon.rotate-up {
+  transform: rotate(180deg);
+}
+
+/* Accordion Content */
+.workspace-accordion-content {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Info Item Card */
+.info-item-card {
+  background: #F0F6FF;
+  /* soft blue-grey card */
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.info-item-label {
+  font-size: 11px;
+  color: #718096;
+  font-weight: 500;
+}
+
+.info-item-value {
+  font-size: 13.5px;
+  color: #1E293B;
+  font-weight: 700;
+}
+
+.book-appointment-btn {
+  margin-top: auto;
+  background: #3B82F6;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2);
+  transition: all 0.2s ease;
+}
+
+.book-appointment-btn:hover {
+  background: #2563EB;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.25);
+}
+
+.book-appointment-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.scrollable-content {
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* Custom Scrollbar for Workspace Sidebar Accordion Content */
+.scrollable-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Ghi chú accordion content */
+.notes-content-wrapper {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.note-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.note-input-label {
+  font-size: 11px;
+  color: #1E293B;
+  font-weight: 700;
+}
+
+.note-textarea {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  color: #1E293B;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.note-textarea::placeholder {
+  color: #A0AEC0;
+}
+
+.note-textarea:focus {
+  border-color: #D97706;
+  /* match orange notes accent */
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.08);
+}
+
+/* Modal Popup styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.appointment-modal-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  width: 440px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  animation: modal-appear 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+}
+
+@keyframes modal-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.appointment-modal-card .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.appointment-modal-card .modal-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1E293B;
+  margin: 0;
+}
+
+.close-modal-btn {
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.close-modal-btn:hover {
+  color: #64748B;
+}
+
+.close-modal-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.month-indicator {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #2D3748;
+  text-align: center;
+  margin: 0 0 16px 0;
+}
+
+/* Calendar Grid inside Modal */
+.modal-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.modal-calendar-day-header {
+  font-size: 11px;
+  font-weight: 700;
+  color: #A0AEC0;
+  text-align: center;
+  padding: 4px 0;
+}
+
+.modal-calendar-day {
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+  background: transparent;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modal-calendar-day.empty {
+  cursor: default;
+  pointer-events: none;
+}
+
+.modal-calendar-day.disabled {
+  color: #CBD5E1;
+  cursor: default;
+  pointer-events: none;
+}
+
+.modal-calendar-day.available {
+  border: 1px solid #E2E8F0;
+  color: #2D3748;
+}
+
+.modal-calendar-day.available:hover {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+}
+
+.modal-calendar-day.selected {
+  background: #3B82F6 !important;
+  color: #FFFFFF !important;
+  border-color: #3B82F6 !important;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+}
+
+/* Time slots selection */
+.time-slots-section {
+  margin-bottom: 24px;
+}
+
+.time-slots-section h4 {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2D3748;
+  margin: 0 0 12px 0;
+  text-align: left;
+}
+
+.time-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.time-slot-btn {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2D3748;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.time-slot-btn:hover {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+}
+
+.time-slot-btn.selected {
+  background: #3B82F6 !important;
+  color: #FFFFFF !important;
+  border-color: #3B82F6 !important;
+}
+
+/* Confirm Booking Action Button */
+.confirm-booking-btn {
+  width: 100%;
+  border: none;
+  background: #E2E8F0;
+  /* Grey muted when not ready */
+  color: #94A3B8;
+  border-radius: 20px;
+  padding: 12px 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: not-allowed;
+  transition: all 0.2s ease;
+}
+
+.confirm-booking-btn.ready {
+  background: #3B82F6;
+  color: #FFFFFF;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2);
+}
+
+.confirm-booking-btn.ready:hover {
+  background: #2563EB;
+}
+
+/* Booking Toast Notification */
+.booking-toast-notification {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #76D28C;
+  /* Figma green */
+  color: #FFFFFF;
+  border-radius: 12px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  z-index: 100;
+  box-shadow: 0 4px 14px rgba(118, 210, 140, 0.35);
+  animation: toast-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.toast-left-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toast-check-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-check-badge svg {
+  width: 14px;
+  height: 14px;
+  stroke: #FFFFFF;
+}
+
+.toast-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.toast-main-msg {
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.toast-sub-msg {
+  font-size: 11px;
+  color: #FFFFFF;
+  opacity: 0.95;
+}
+
+.toast-dismiss-btn {
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  opacity: 0.8;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.toast-dismiss-btn:hover {
+  opacity: 1;
+}
+
+.toast-dismiss-btn svg {
+  width: 16px;
+  height: 16px;
+}

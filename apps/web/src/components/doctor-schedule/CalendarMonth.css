@@ -1,0 +1,92 @@
+.calendar-container {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #8DC1FF;
+  flex: 1;
+}
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.month-select {
+  width: fit-content;
+  height: fit-content;
+  position: relative;
+  border-radius: 10px;
+  border: 1px solid #91C3FF;
+  background: #F3F6FF;
+  padding: 4px 12px;
+}
+.calendar-grid-header, .calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  text-align: center;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+}
+.day-name {
+  color: #6A7282;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+.calendar-day {
+  height: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #DCEBFF;
+  border-radius: 12px;
+  cursor: pointer;
+  position: relative;
+  color: #6A7282;
+  aspect-ratio: 1 / 1;
+  font-size: 14px;
+  background: white;
+}
+.calendar-day.has-schedule {
+  background: #EFF6FF;
+  color: #244a6b;
+  border-color: #DCEBFF;
+}
+/* .calendar-day.today styling removed to avoid bold borders on non-selected today */
+.calendar-day.selected {
+  background: #82B1FF !important;
+  color: #244A6B !important;
+  border-color: #82B1FF !important;
+  font-weight: 700;
+}
+.calendar-day.selected .day-number {
+  color: #244A6B !important;
+}
+.calendar-day.selected .event-dot {
+  background: #244A6B !important;
+}
+.calendar-day.weekend {
+  color: #A3B8CE;
+}
+.event-dot {
+  width: 6px;
+  height: 6px;
+  background: #244A6B;
+  border-radius: 50%;
+  margin-top: 4px;
+}
+.empty-cell {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    border: 1px solid transparent; 
+}
+/* khi dùng ở dashboard, cần bỏ border và padding để đồng bộ với style của dashboard */
+.calendar-container.dashboard-calendar {
+    border: none;
+    padding: 0;
+    background: transparent;
+}

@@ -1,0 +1,44 @@
+.date-filter-button {
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 118px;
+  border: 1px solid #dcebff;
+  border-radius: 24px;
+  background: #f3f6ff;
+  color: #244a6b;
+  padding: 0 16px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease;
+  white-space: nowrap;
+}
+
+.date-filter-button:hover {
+  background: #dcebff;
+  border-color: #91c3ff;
+}
+
+.date-filter-button svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.date-filter-menu-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.date-filter-chevron {
+  width: 16px;
+  height: 16px;
+}

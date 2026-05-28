@@ -1,0 +1,35 @@
+.ui-return-button {
+  min-height: 40px;
+  border-radius: 9999px;
+  padding: 0 24px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  background-color: #e6effe;
+  color: #244a6b;
+  border: none;
+  box-shadow: 0 2px 4px rgba(36, 74, 107, 0.02);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, transform 100ms ease;
+  outline: none;
+  align-self: flex-start;
+}
+
+.ui-return-button:hover {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  transform: translateX(-2px);
+}
+
+.ui-return-arrow-svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

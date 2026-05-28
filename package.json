@@ -1,0 +1,22 @@
+{
+  "name": "family-clinic-chatbot",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace apps/web run dev",
+    "build:web": "npm --workspace apps/web run build",
+    "lint:web": "npm --workspace apps/web run lint",
+    "preview:web": "npm --workspace apps/web run preview",
+    "dev:api": "npm --workspace apps/api run dev",
+    "build:api": "npm --workspace apps/api run build",
+    "lint:api": "npm --workspace apps/api run lint"
+  },
+  "devDependencies": {
+    "@rolldown/binding-darwin-arm64": "^1.0.2",
+    "lightningcss-darwin-arm64": "^1.32.0"
+  }
+}
