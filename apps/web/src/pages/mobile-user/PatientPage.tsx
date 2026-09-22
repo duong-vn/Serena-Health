@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../auth/AuthContext'
 import { api } from '../../api/client'
 import { useApi } from '../../api/useApi'
@@ -38,6 +38,8 @@ export default function PatientPage() {
   const [tab, setTab] = useState<'chat' | 'booking' | 'appointments' | 'profile'>('chat')
   const [conversationId, setConversationId] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const profileRef = useRef<HTMLDivElement>(null)
 
   const conversations = useApi<Conversation[]>('/conversations')
   const appointments = useApi<Appointment[]>('/appointments')
@@ -46,6 +48,25 @@ export default function PatientPage() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
+
+  // Handle clicking outside profile dropdown & escape key
+  useEffect(() => {
+    if (!profileOpen) return
+    function handleClickOutside(e: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false)
+      }
+    }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setProfileOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [profileOpen])
 
   // Auto-select the first conversation if none selected
   useEffect(() => {
@@ -80,8 +101,15 @@ export default function PatientPage() {
       <aside className={`patient-sidebar ${sidebarOpen ? '' : 'is-collapsed'}`} aria-label="Danh sách hội thoại">
         <div className="patient-sidebar-brand">
           <div className="patient-brand-link">
-            <SystemLogo className="patient-brand-logo" />
-            <span>serene<span className="patient-brand-light"> health</span></span>
+            <div className="patient-brand-emblem">
+              <SystemLogo className="patient-brand-logo" />
+            </div>
+            <div className="patient-brand-text">
+              <span className="patient-brand-name">
+                serene <span className="patient-brand-light">health</span>
+              </span>
+              <span className="patient-brand-tagline">Hệ thống Y tế & Sức khỏe</span>
+            </div>
           </div>
           <button
             className="btn-toggle-sidebar"
@@ -89,7 +117,7 @@ export default function PatientPage() {
             title="Thu gọn danh sách"
             aria-label="Thu gọn danh sách"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
@@ -152,12 +180,133 @@ export default function PatientPage() {
           ))}
         </div>
 
-        <div className="patient-sidebar-user">
-          <div className="user-avatar-small">{userInitial}</div>
-          <div className="user-info-text">
-            <div className="user-info-name">{user?.fullName || 'Bệnh nhân'}</div>
-            <div className="user-info-sub">Đang hoạt động</div>
-          </div>
+        <div className="patient-sidebar-user-container" ref={profileRef}>
+          {profileOpen && (
+            <div className="patient-sidebar-dropdown" role="menu" aria-label="Menu tài khoản bệnh nhân">
+              <div className="dropdown-user-header">
+                <div className="dropdown-user-avatar">{userInitial}</div>
+                <div className="dropdown-user-details">
+                  <strong className="dropdown-user-name">{user?.fullName || 'Bệnh nhân'}</strong>
+                  <span className="dropdown-user-email">{user?.email || 'Tài khoản Serene'}</span>
+                  <span className="dropdown-user-role-badge">Bệnh nhân</span>
+                </div>
+              </div>
+
+              <div className="dropdown-menu-list">
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={`dropdown-menu-item ${tab === 'chat' ? 'is-current' : ''}`}
+                  onClick={() => {
+                    setTab('chat')
+                    setProfileOpen(false)
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                  <span>Tư vấn Serene AI</span>
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={`dropdown-menu-item ${tab === 'booking' ? 'is-current' : ''}`}
+                  onClick={() => {
+                    setTab('booking')
+                    setProfileOpen(false)
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  <span>Đăng ký lịch khám</span>
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={`dropdown-menu-item ${tab === 'appointments' ? 'is-current' : ''}`}
+                  onClick={() => {
+                    setTab('appointments')
+                    setProfileOpen(false)
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                  <span className="dropdown-item-text">Lịch hẹn của tôi</span>
+                  {(appointments.data?.length ?? 0) > 0 && (
+                    <span className="dropdown-item-badge">{appointments.data?.length}</span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={`dropdown-menu-item ${tab === 'profile' ? 'is-current' : ''}`}
+                  onClick={() => {
+                    setTab('profile')
+                    setProfileOpen(false)
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                  </svg>
+                  <span>Hồ sơ sức khỏe cá nhân</span>
+                </button>
+
+                <div className="dropdown-divider" />
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="dropdown-menu-item dropdown-logout-btn"
+                  onClick={() => {
+                    setProfileOpen(false)
+                    logout()
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                  <span>Đăng xuất</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <button
+            type="button"
+            className={`patient-sidebar-user ${profileOpen ? 'is-active' : ''}`}
+            onClick={() => setProfileOpen((prev) => !prev)}
+            aria-expanded={profileOpen}
+            aria-haspopup="true"
+            title="Tùy chọn tài khoản bệnh nhân"
+          >
+            <div className="user-avatar-small">{userInitial}</div>
+            <div className="user-info-text">
+              <div className="user-info-name">{user?.fullName || 'Bệnh nhân'}</div>
+              <div className="user-info-sub">Tùy chọn tài khoản</div>
+            </div>
+            <svg
+              className={`sidebar-user-chevron ${profileOpen ? 'is-rotated' : ''}`}
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <polyline points="18 15 12 9 6 15" />
+            </svg>
+          </button>
         </div>
       </aside>
 
@@ -467,71 +616,6 @@ export default function PatientPage() {
           </div>
         )}
       </section>
-
-      {/* 7. Floating Bottom Dock (Seamless Feature Switching) */}
-      <nav className="patient-floating-dock" aria-label="Điều hướng tính năng bệnh nhân">
-        <button
-          className={`dock-item-btn ${tab === 'chat' ? 'is-active' : ''}`}
-          onClick={() => setTab('chat')}
-          title="Trò chuyện cùng Serene AI"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-          <span>Tư vấn AI</span>
-        </button>
-
-        <button
-          className={`dock-item-btn ${tab === 'booking' ? 'is-active' : ''}`}
-          onClick={() => setTab('booking')}
-          title="Đặt lịch khám bác sĩ"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          <span>Đặt lịch khám</span>
-        </button>
-
-        <button
-          className={`dock-item-btn ${tab === 'appointments' ? 'is-active' : ''}`}
-          onClick={() => setTab('appointments')}
-          title="Xem lịch hẹn đã đặt"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-          </svg>
-          <span>Lịch hẹn ({appointments.data?.length ?? 0})</span>
-        </button>
-
-        <button
-          className={`dock-item-btn ${tab === 'profile' ? 'is-active' : ''}`}
-          onClick={() => setTab('profile')}
-          title="Hồ sơ y tế tự khai"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          <span>Hồ sơ</span>
-        </button>
-
-        <button
-          className="dock-item-btn btn-dock-logout"
-          onClick={logout}
-          title="Đăng xuất khỏi tài khoản"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
-          <span>Đăng xuất</span>
-        </button>
-      </nav>
     </main>
   )
 }
