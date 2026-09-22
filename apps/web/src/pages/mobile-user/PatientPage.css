@@ -775,6 +775,7 @@
 }
 
 .patient-sanctuary .chat-bubble-avatar {
+  order: 0;
   flex-shrink: 0;
 }
 
