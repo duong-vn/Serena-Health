@@ -1,24 +1,12 @@
 export type DoctorStatus = 'online' | 'offline' | 'busy'
-
-export type Specialty = 'Nội tiết' | 'Tim mạch' | 'Sản phụ khoa' | 'Nhi khoa' | 'Da liễu' | 'Tai Mũi Họng'
-
-export type Branch = 'Chi nhánh A' | 'Chi nhánh B' | 'Chi nhánh C'
-
+export type Specialty = string
+export type Branch = string
 export type Gender = 'Nam' | 'Nữ' | 'Khác'
 
-export type DoctorSchedule = {
-  day: string
-  time: string
-}
+export interface DoctorSchedule { day: string; time: string }
+export interface DoctorReview { id: string; patientName: string; rating: number; comment: string }
 
-export type DoctorReview = {
-  id: string
-  patientName: string
-  rating: number
-  comment: string
-}
-
-export type Doctor = {
+export interface Doctor {
   id: string
   fullName: string
   gender: Gender
@@ -47,7 +35,7 @@ export type Doctor = {
   username: string
 }
 
-export type DoctorFormValues = {
+export interface DoctorFormValues {
   fullName: string
   gender: string
   birthday: string

@@ -1,0 +1,27 @@
+- main [ref=f2e3]:
+  - generic [ref=f2e4]:
+    - region "Serene Health" [ref=f2e5]:
+      - generic [ref=f2e6]:
+        - img "System logo" [ref=f2e7]
+        - generic [ref=f2e12]: serene health
+      - generic [ref=f2e13]:
+        - heading [level=1] [ref=f2e14]:
+          - text: Một khởi đầunhẹ nhàng cho
+          - emphasis [ref=f2e15]: sức khỏe của bạn.
+        - paragraph [ref=f2e16]: Trợ lý y tế thông minh, đồng hành cùng bạn trên hành trình chăm sóc sức khỏe.
+      - generic [ref=f2e29]:
+        - generic [ref=f2e30]: Chăm sóc sức khỏe, theo cách của bạn.
+        - generic [aria-hidden] [ref=f2e31]: Serene Health
+    - generic [ref=f2e33]:
+      - generic [ref=f2e34]:
+        - heading "Bạn cần hỗ trợ?" [level=2] [ref=f2e97]
+        - paragraph [ref=f2e36]: Chúng tôi sẽ hướng dẫn bạn bước tiếp theo.
+      - region "Biểu mẫu xác thực" [ref=f2e37]:
+        - generic [ref=f2e98]:
+          - button "Quay lại trang đăng nhập" [ref=f2e99] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f2e100]: ‹
+            - text: Quay lại trang đăng nhập
+          - heading "Khôi phục mật khẩu" [level=3] [ref=f2e101]
+          - status [ref=f2e102]:
+            - paragraph [ref=f2e103]: Tính năng khôi phục mật khẩu chưa được hỗ trợ.
+            - paragraph [ref=f2e104]: Vui lòng liên hệ quản trị viên phòng khám để được xác minh và hỗ trợ an toàn.

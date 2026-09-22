@@ -13,7 +13,16 @@
     "preview:web": "npm --workspace apps/web run preview",
     "dev:api": "npm --workspace apps/api run dev",
     "build:api": "npm --workspace apps/api run build",
-    "lint:api": "npm --workspace apps/api run lint"
+    "lint:api": "npm --workspace apps/api run lint",
+    "typecheck": "npm --workspace apps/web run typecheck && npm --workspace apps/api run typecheck",
+    "test:web": "npm --workspace apps/web test",
+    "test:api": "npm --workspace apps/api test",
+    "test": "npm run test:api && npm run test:web",
+    "db:generate": "npm --workspace apps/api run db:generate",
+    "db:validate": "npm --workspace apps/api run db:validate",
+    "db:migrate": "npm --workspace apps/api run db:migrate",
+    "db:seed": "npm --workspace apps/api run db:seed",
+    "db:studio": "npm --workspace apps/api run db:studio"
   },
   "devDependencies": {}
 }

@@ -41,6 +41,13 @@
 
 .profile-text {
   min-width: 98px;
+  max-width: 220px;
+}
+
+.profile-text strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-text strong {
@@ -74,5 +81,31 @@
   width: 24px;
   height: 24px;
   fill: currentColor;
+}
+
+.notification-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.header-logout-button {
+  min-height: 36px;
+  border: 1px solid #cbd8e8;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #244a6b;
+  cursor: pointer;
+  font: inherit;
+  padding: 0 14px;
+}
+
+.header-logout-button:hover {
+  border-color: #91c3ff;
+  background: #eef6ff;
+}
+
+.header-logout-button:focus-visible {
+  outline: 3px solid rgba(74, 147, 255, 0.35);
+  outline-offset: 2px;
 }
 

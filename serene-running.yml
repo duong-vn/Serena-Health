@@ -1,0 +1,22 @@
+- main [ref=f3e3]:
+  - generic [ref=f3e4]:
+    - region "Serene Health" [ref=f3e5]:
+      - generic [ref=f3e6]:
+        - generic [ref=f3e14]:
+          - heading "Serene Health" [level=1] [ref=f3e15]
+          - paragraph [ref=f3e16]: Trợ lý y tế thông minh, đồng hành cùng sức khỏe của bạn
+        - generic [ref=f3e17]:
+          - generic [ref=f3e18]: AI hỗ trợ
+          - generic [ref=f3e19]: Đáng tin cậy
+    - generic [ref=f3e21]:
+      - generic [ref=f3e22]:
+        - img "System logo" [ref=f3e23]
+        - heading "CHÀO MỪNG ĐẾN VỚI SERENE HEALTH" [level=2] [ref=f3e28]
+        - paragraph [ref=f3e29]: Đăng nhập để sử dụng dịch vụ của hệ thống
+      - region "Biểu mẫu xác thực" [ref=f3e30]:
+        - generic [ref=f3e31]:
+          - generic [ref=f3e32]
+          - generic [ref=f3e35]
+          - button "Quên mật khẩu?" [ref=f3e39] [cursor=pointer]
+          - button "Đăng nhập" [ref=f3e40] [cursor=pointer]
+          - paragraph [ref=f3e42]

@@ -1,0 +1,260 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  PATIENT
+  DOCTOR
+  EXPERT
+  MANAGER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ConsultationStatus {
+  AI_CHAT
+  ESCALATION_REQUESTED
+  ASSIGNED_TO_DOCTOR
+  DOCTOR_CHAT
+  COMPLETED
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  DOCTOR
+  SYSTEM
+}
+
+enum ReviewStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique @db.VarChar(255)
+  phone        String?  @db.VarChar(32)
+  fullName     String   @db.VarChar(160)
+  passwordHash String   @db.VarChar(255)
+  role         Role     @default(PATIENT)
+  active       Boolean  @default(true)
+  gender       Gender?
+  birthday     DateTime? @db.Date
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+
+  patientProfile PatientProfile?
+  doctorProfile  DoctorProfile?
+  appointments   Appointment[] @relation("PatientAppointments")
+  conversations  Conversation[]
+  consultations  Consultation[] @relation("PatientConsultations")
+  messages       Message[]
+  expertReviews  ExpertReview[] @relation("ExpertReviews")
+
+  @@index([role, active])
+}
+
+model PatientProfile {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @unique @db.Uuid
+  address        String?  @db.VarChar(500)
+  bloodType      String?  @db.VarChar(8)
+  medicalHistory String[] @default([])
+  allergies      String[] @default([])
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Clinic {
+  id        String   @id @default(uuid()) @db.Uuid
+  code      String   @unique @db.VarChar(50)
+  name      String   @db.VarChar(255)
+  address   String   @db.VarChar(500)
+  phone     String?  @db.VarChar(32)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  doctors DoctorProfile[]
+
+  @@index([active, name])
+}
+
+model MedicalService {
+  id              String   @id @default(uuid()) @db.Uuid
+  code            String   @unique @db.VarChar(50)
+  name            String   @db.VarChar(255)
+  specialty       String   @db.VarChar(120)
+  description     String?  @db.Text
+  durationMinutes Int      @default(30)
+  price           Decimal  @default(0) @db.Decimal(12, 2)
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
+
+  doctors      DoctorProfile[]
+  appointments Appointment[]
+
+  @@index([active, specialty])
+}
+
+model DoctorProfile {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @unique @db.Uuid
+  clinicId         String   @db.Uuid
+  serviceId        String   @db.Uuid
+  licenseNumber    String   @unique @db.VarChar(100)
+  degree           String?  @db.VarChar(255)
+  biography        String?  @db.Text
+  address          String?  @db.VarChar(500)
+  avatarColor      String?  @db.VarChar(20)
+  yearsExperience  Int      @default(0)
+  consultationFee  Decimal  @default(0) @db.Decimal(12, 2)
+  examinationFee   Decimal  @default(0) @db.Decimal(12, 2)
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime @updatedAt @db.Timestamptz(3)
+
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinic        Clinic @relation(fields: [clinicId], references: [id], onDelete: Restrict)
+  service       MedicalService @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  schedules     DoctorSchedule[]
+  appointments  Appointment[]
+  consultations Consultation[] @relation("DoctorConsultations")
+
+  @@index([clinicId, active])
+  @@index([serviceId, active])
+}
+
+model DoctorSchedule {
+  id        String   @id @default(uuid()) @db.Uuid
+  doctorId  String   @db.Uuid
+  dayOfWeek Int      @db.SmallInt
+  startTime String   @db.Char(5)
+  endTime   String   @db.Char(5)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  doctor DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, dayOfWeek, startTime, endTime])
+  @@index([doctorId, dayOfWeek, active])
+}
+
+model Appointment {
+  id        String            @id @default(uuid()) @db.Uuid
+  patientId String            @db.Uuid
+  doctorId  String            @db.Uuid
+  serviceId String            @db.Uuid
+  startAt   DateTime          @db.Timestamptz(3)
+  endAt     DateTime          @db.Timestamptz(3)
+  status    AppointmentStatus @default(PENDING)
+  reason    String?           @db.Text
+  notes     String?           @db.Text
+  createdAt DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime          @updatedAt @db.Timestamptz(3)
+
+  patient User @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Restrict)
+  doctor  DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  service MedicalService @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+
+  @@index([patientId, startAt])
+  @@index([doctorId, startAt])
+  @@index([status, startAt])
+}
+
+model Conversation {
+  id                  String   @id @default(uuid()) @db.Uuid
+  patientId           String   @db.Uuid
+  title               String   @db.VarChar(200)
+  createdAt           DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime @updatedAt @db.Timestamptz(3)
+  generationExpiresAt DateTime? @db.Timestamptz(3)
+
+  patient      User @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  messages     Message[]
+  consultation Consultation?
+  reviews      ExpertReview[]
+
+  @@index([patientId, updatedAt])
+  @@index([generationExpiresAt])
+}
+
+model Message {
+  id             String      @id @default(uuid()) @db.Uuid
+  conversationId String      @db.Uuid
+  senderUserId   String?     @db.Uuid
+  role           MessageRole
+  content        String      @db.Text
+  parts          Json?
+  model          String?     @db.VarChar(120)
+  metadata       Json?
+  createdAt      DateTime    @default(now()) @db.Timestamptz(3)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderUser   User? @relation(fields: [senderUserId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId, createdAt, id])
+}
+
+model Consultation {
+  id             String             @id @default(uuid()) @db.Uuid
+  conversationId String             @unique @db.Uuid
+  patientId      String             @db.Uuid
+  doctorId       String?            @db.Uuid
+  status         ConsultationStatus @default(AI_CHAT)
+  summary        String?            @db.Text
+  reason         String?            @db.Text
+  notes          String?            @db.Text
+  createdAt      DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime           @updatedAt @db.Timestamptz(3)
+  completedAt    DateTime?          @db.Timestamptz(3)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Restrict)
+  patient      User @relation("PatientConsultations", fields: [patientId], references: [id], onDelete: Restrict)
+  doctor       DoctorProfile? @relation("DoctorConsultations", fields: [doctorId], references: [id], onDelete: SetNull)
+
+  @@index([patientId, status])
+  @@index([doctorId, status])
+}
+
+model ExpertReview {
+  id             String       @id @default(uuid()) @db.Uuid
+  conversationId String       @db.Uuid
+  reviewerId     String       @db.Uuid
+  status         ReviewStatus @default(PENDING)
+  flagReason     String?      @db.VarChar(255)
+  notes          String       @db.Text
+  resolution     String?      @db.Text
+  resolvedAt     DateTime?    @db.Timestamptz(3)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(3)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  reviewer     User @relation("ExpertReviews", fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@unique([conversationId, reviewerId])
+  @@index([status, createdAt])
+}

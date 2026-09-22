@@ -1,0 +1,50 @@
+- main [ref=f2e3]:
+  - generic [ref=f2e33]:
+    - generic [ref=f2e119]:
+      - img "System logo" [ref=f2e120]
+      - generic [ref=f2e125]: serene health
+    - generic [ref=f2e34]:
+      - heading "Bắt đầu hành trình của bạn" [level=2] [ref=f2e126]
+      - paragraph [ref=f2e36]: Tạo tài khoản bệnh nhân để sử dụng dịch vụ.
+    - region "Biểu mẫu xác thực" [ref=f2e37]:
+      - generic [ref=f2e127]:
+        - button "Quay lại trang đăng nhập" [ref=f2e128] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f2e129]: ‹
+          - text: Quay lại trang đăng nhập
+        - heading "Đăng ký tài khoản bệnh nhân" [level=3] [ref=f2e130]
+        - generic [ref=f2e131]:
+          - generic [ref=f2e132]:
+            - generic [ref=f2e133]: Email
+            - textbox "Email Vui lòng nhập email." [invalid] [ref=f2e154]:
+              - /placeholder: email@example.com
+            - alert [ref=f2e155]: Vui lòng nhập email.
+          - generic [ref=f2e135]:
+            - generic [ref=f2e136]: Số điện thoại (không bắt buộc)
+            - textbox "Số điện thoại (không bắt buộc)" [ref=f2e137]:
+              - /placeholder: 10 chữ số (03/05/07/08/09...)
+          - generic [ref=f2e138]:
+            - generic [ref=f2e139]: Họ và tên
+            - textbox "Họ và tên Vui lòng nhập họ và tên." [invalid] [ref=f2e156]:
+              - /placeholder: Nhập họ và tên
+            - alert [ref=f2e157]: Vui lòng nhập họ và tên.
+          - generic [ref=f2e141]:
+            - generic [ref=f2e142]: Giới tính (không bắt buộc)
+            - combobox "Giới tính (không bắt buộc)" [ref=f2e143]:
+              - option "Chọn giới tính" [selected]
+              - option "Nam"
+              - option "Nữ"
+              - option "Khác"
+          - generic [ref=f2e144]:
+            - generic [ref=f2e145]: Ngày sinh (không bắt buộc)
+            - textbox "Ngày sinh (không bắt buộc)" [ref=f2e146]:
+              - /placeholder: ""
+          - generic [ref=f2e147]:
+            - generic [ref=f2e148]: Mật khẩu
+            - textbox "Mật khẩu Vui lòng nhập mật khẩu." [invalid] [ref=f2e158]:
+              - /placeholder: 10–128 kí tự, gồm chữ hoa, chữ thường, số
+            - alert [ref=f2e159]: Vui lòng nhập mật khẩu.
+          - generic [ref=f2e150]:
+            - generic [ref=f2e151]: Xác nhận mật khẩu
+            - textbox "Xác nhận mật khẩu" [ref=f2e152]:
+              - /placeholder: Nhập lại mật khẩu
+        - button "Đăng ký" [active] [ref=f2e153] [cursor=pointer]

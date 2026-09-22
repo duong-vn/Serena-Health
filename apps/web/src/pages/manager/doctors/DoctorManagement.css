@@ -150,6 +150,23 @@
   gap: 8px;
 }
 
+.doctor-data-state {
+  min-height: 140px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  border-radius: 18px;
+  background: #fff;
+  color: #64748b;
+  padding: 24px;
+  text-align: center;
+}
+
+.doctor-data-state p {
+  margin: 0;
+}
+
 .doctor-pagination {
   display: flex;
   justify-content: center;

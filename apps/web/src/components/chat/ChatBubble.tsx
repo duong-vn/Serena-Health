@@ -1,4 +1,5 @@
 import { ChatSystemNotice } from './ChatSystemNotice'
+import { FormattedChatText } from './FormattedChatText'
 import type { ChatMessage } from './chatTypes'
 import './ChatComponents.css'
 
@@ -46,7 +47,7 @@ export function ChatBubble({ message }: ChatBubbleProps) {
       )}
       <div className={`chat-bubble chat-bubble-${message.sender}`}>
         {isDoctor && message.doctorName ? <strong>{message.doctorName}</strong> : null}
-        <p>{message.text}</p>
+        <FormattedChatText content={message.text} />
         <time>{message.time}</time>
       </div>
     </div>

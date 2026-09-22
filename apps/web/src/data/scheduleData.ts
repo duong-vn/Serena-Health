@@ -171,7 +171,7 @@ export const SCHEDULE_DATA: Record<string, Shift[]> = new Proxy(baseScheduleData
     }
 
     // Determine shift presence based on month-specific weekday patterns
-    let hasShift = false;
+    let hasShift: boolean;
     if (dayOfWeek === 6) {
       hasShift = true;
     } else {
@@ -196,7 +196,7 @@ export const SCHEDULE_DATA: Record<string, Shift[]> = new Proxy(baseScheduleData
     }
 
     // Decide if this day has appointments (patients)
-    let hasPatients = false;
+    let hasPatients: boolean;
     if (month === 6) {
       hasPatients = day % 2 !== 0; // June odd days have patients
     } else if (month === 7) {

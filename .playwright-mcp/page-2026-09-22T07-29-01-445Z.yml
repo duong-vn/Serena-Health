@@ -1,0 +1,46 @@
+- main [ref=f3e3]:
+  - complementary "Danh sách hội thoại" [ref=f3e4]:
+    - generic [ref=f3e5]:
+      - generic [ref=f3e6]:
+        - img "System logo" [ref=f3e7]
+        - generic [ref=f3e12]: serene health
+      - button "Thu gọn danh sách" [ref=f3e13] [cursor=pointer]
+    - button "Tạo hội thoại mới" [ref=f3e17] [cursor=pointer]
+    - generic [ref=f3e19]:
+      - button "Tư vấn đau đầu và chóng mặt" [ref=f3e69] [cursor=pointer]
+      - button "Khám sức khỏe tiền hôn nhân" [ref=f3e74] [cursor=pointer]
+    - generic [ref=f3e21]:
+      - generic [ref=f3e22]: "N"
+      - generic [ref=f3e23]:
+        - generic [ref=f3e24]: Nguyễn Văn An
+        - generic [ref=f3e25]: Đang hoạt động
+  - generic [ref=f3e26]:
+    - generic [ref=f3e27]:
+      - generic "Lưu ý an toàn y tế" [ref=f3e29]
+      - link "Cấp cứu 115" [ref=f3e34] [cursor=pointer]:
+        - /url: tel:115
+    - generic [ref=f3e79]:
+      - generic [ref=f3e80]:
+        - generic [ref=f3e81]:
+          - generic "Hệ thống trực tuyến" [ref=f3e82]
+          - generic [ref=f3e83]:
+            - heading "Trợ lý Sức khỏe Serene AI" [level=2] [ref=f3e84]
+            - paragraph [ref=f3e85]: Hỗ trợ sàng lọc triệu chứng và giải đáp y tế ban đầu 24/7
+        - button "Đặt lịch khám Bác sĩ" [ref=f3e86] [cursor=pointer]
+      - log "Nội dung hội thoại" [ref=f3e89]:
+        - generic [ref=f3e91]:
+          - paragraph [ref=f3e92]: Chào Serene, dạo này tôi hay bị mất ngủ và nhức mỏi cổ vai gáy.
+          - time
+        - generic [ref=f3e98]:
+          - paragraph [ref=f3e99]: Chào bạn An! Triệu chứng đau mỏi vai gáy kèm mất ngủ thường liên quan đến căng thẳng, tư thế làm việc hoặc thoái hóa đốt sống cổ. Bạn đã gặp tình trạng này bao lâu rồi?
+          - time
+      - generic [ref=f3e101]:
+        - textbox "Tin nhắn tư vấn" [ref=f3e102]:
+          - /placeholder: Mô tả triệu chứng hoặc đặt câu hỏi y tế cho Serene (Enter để gửi)...
+        - button "Gửi tin nhắn" [disabled] [ref=f3e103]
+  - navigation "Điều hướng tính năng bệnh nhân" [ref=f3e45]:
+    - button "Trò chuyện cùng Serene AI" [ref=f3e203] [cursor=pointer]
+    - button "Đặt lịch khám bác sĩ" [ref=f3e204] [cursor=pointer]
+    - button "Xem lịch hẹn đã đặt" [ref=f3e205] [cursor=pointer]
+    - button "Hồ sơ y tế tự khai" [ref=f3e206] [cursor=pointer]
+    - button "Đăng xuất khỏi tài khoản" [ref=f3e207] [cursor=pointer]

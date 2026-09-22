@@ -166,6 +166,74 @@
   margin-top: 24px;
 }
 
+.dashboard-state-card {
+  margin-bottom: 18px;
+  min-height: 120px;
+  display: grid;
+  place-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+}
+
+.dashboard-state-card h2,
+.dashboard-state-card p {
+  margin: 0;
+}
+
+.dashboard-retry-button {
+  min-height: 40px;
+  justify-self: center;
+  border: 1px solid #91c3ff;
+  border-radius: 999px;
+  background: #fff;
+  color: #244a6b;
+  cursor: pointer;
+  padding: 0 18px;
+}
+
+.dashboard-grid-real {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.dashboard-empty-copy {
+  margin: 42px 0;
+  color: #718096;
+  text-align: center;
+}
+
+.dashboard-summary-list {
+  display: grid;
+  gap: 14px;
+  margin: 22px 0;
+}
+
+.dashboard-summary-list div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #edf1f6;
+  padding-bottom: 12px;
+}
+
+.dashboard-summary-list dt {
+  color: #718096;
+}
+
+.dashboard-summary-list dd {
+  margin: 0;
+  color: #244a6b;
+  font-size: 24px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.consultation-summary-card > p {
+  color: #718096;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .symptom-tags span {
   min-height: 35px;
   display: inline-flex;

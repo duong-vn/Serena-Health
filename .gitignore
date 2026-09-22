@@ -11,6 +11,12 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.*
+!.env.example
+.claude/worktrees/
+apps/api/src/generated/
+coverage/
 
 # Editor directories and files
 .vscode/*

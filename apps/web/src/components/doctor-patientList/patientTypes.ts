@@ -9,3 +9,5 @@ export type PatientProfile = {
   examType: 'Tư vấn' | 'Khám trực tiếp' | 'Cả hai'
   status: PatientStatus
 }
+
+export type Patient = PatientProfile

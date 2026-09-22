@@ -1,0 +1,30 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - region "Serene Health" [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e14]:
+          - heading "Serene Health" [level=1] [ref=e15]
+          - paragraph [ref=e16]: Trợ lý y tế thông minh, đồng hành cùng sức khỏe của bạn
+        - generic [ref=e17]:
+          - generic [ref=e18]: AI hỗ trợ
+          - generic [ref=e19]: Đáng tin cậy
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - img "System logo" [ref=e23]
+        - heading "CHÀO MỪNG ĐẾN VỚI SERENE HEALTH" [level=2] [ref=e28]
+        - paragraph [ref=e29]: Đăng nhập để sử dụng dịch vụ của hệ thống
+      - region "Biểu mẫu xác thực" [ref=e30]:
+        - generic [ref=e31]:
+          - generic [ref=e32]:
+            - generic [ref=e33]: Email
+            - textbox "Email" [ref=e34]:
+              - /placeholder: email@example.com
+          - generic [ref=e35]:
+            - generic [ref=e36]: Mật khẩu
+            - textbox "Mật khẩu" [ref=e37]:
+              - /placeholder: Nhập mật khẩu
+          - button "Quên mật khẩu?" [ref=e39] [cursor=pointer]
+          - button "Đăng nhập" [ref=e40] [cursor=pointer]
+          - paragraph [ref=e42]:
+            - generic [ref=e43]: Chưa có tài khoản bệnh nhân?
+            - button "Đăng ký ngay" [ref=e44] [cursor=pointer]

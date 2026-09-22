@@ -1,0 +1,29 @@
+- main [ref=f3e3]:
+  - complementary "Danh sách hội thoại" [ref=f3e4]:
+    - generic [ref=f3e5]:
+      - generic [ref=f3e6]:
+        - img "System logo" [ref=f3e7]
+        - generic [ref=f3e12]: serene health
+      - button "Thu gọn danh sách" [ref=f3e13] [cursor=pointer]
+    - button "Tạo hội thoại mới" [ref=f3e17] [cursor=pointer]
+    - paragraph [ref=f3e20]: Đang tải lịch sử…
+    - generic [ref=f3e21]:
+      - generic [ref=f3e22]: "N"
+      - generic [ref=f3e23]:
+        - generic [ref=f3e24]: Nguyễn Văn An
+        - generic [ref=f3e25]: Đang hoạt động
+  - generic [ref=f3e26]:
+    - generic [ref=f3e27]:
+      - generic "Lưu ý an toàn y tế" [ref=f3e29]: Serene AI hỗ trợ sàng lọc sơ bộ, không thay thế chẩn đoán bác sĩ.
+      - link "Cấp cứu 115" [ref=f3e34] [cursor=pointer]:
+        - /url: tel:115
+    - generic [ref=f3e38]:
+      - heading "Bạn đang cảm thấy thế nào hôm nay?" [level=2] [ref=f3e42]
+      - paragraph [ref=f3e43]: Trợ lý sức khỏe Serene AI luôn sẵn sàng lắng nghe các triệu chứng và hỗ trợ định hướng chăm sóc sức khỏe an toàn.
+      - button "Bắt đầu hội thoại ngay" [ref=f3e44] [cursor=pointer]
+  - navigation "Điều hướng tính năng bệnh nhân" [ref=f3e45]:
+    - button "Tư vấn AI" [ref=f3e46] [cursor=pointer]
+    - button "Đặt lịch khám" [ref=f3e50] [cursor=pointer]
+    - button "Lịch hẹn (0)" [ref=f3e54] [cursor=pointer]
+    - button "Hồ sơ" [ref=f3e59] [cursor=pointer]
+    - button "Đăng xuất" [ref=f3e64] [cursor=pointer]

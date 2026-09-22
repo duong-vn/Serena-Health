@@ -166,6 +166,8 @@ export function DoctorDetailPage() {
   const [isEditing, setIsEditing] = useState(false)
   const [values, setValues] = useState<DoctorFormValues>(() => (doctor ? doctorToFormValues(doctor) : initialDoctorFormValues))
   const [errors, setErrors] = useState<DoctorFormErrors>({})
+  const [requestError, setRequestError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     if (doctor) {
@@ -202,7 +204,7 @@ export function DoctorDetailPage() {
     setIsEditing(false)
   }
 
-  const saveEdit = () => {
+  const saveEdit = async () => {
     const nextErrors = validateDoctorForm(values, doctors, doctor.id)
     setErrors(nextErrors)
 
@@ -210,8 +212,16 @@ export function DoctorDetailPage() {
       return
     }
 
-    updateDoctor(doctor.id, values)
-    setIsEditing(false)
+    setSubmitting(true)
+    setRequestError('')
+    try {
+      await updateDoctor(doctor.id, values)
+      setIsEditing(false)
+    } catch (error) {
+      setRequestError(error instanceof Error ? error.message : 'Không thể cập nhật bác sĩ.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -233,7 +243,7 @@ export function DoctorDetailPage() {
                   <PrimaryButton variant="ghost" onClick={cancelEdit}>
                     Hủy
                   </PrimaryButton>
-                  <PrimaryButton onClick={saveEdit}>
+                  <PrimaryButton disabled={submitting} onClick={saveEdit}>
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M5 12l4 4L19 6" />
                     </svg>

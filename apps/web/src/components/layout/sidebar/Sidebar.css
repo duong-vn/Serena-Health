@@ -179,6 +179,19 @@
   box-shadow: none;
 }
 
+.nav-item-disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.nav-item-disabled:hover {
+  transform: none;
+}
+
+.sidebar-search:has(input:disabled) {
+  opacity: 0.58;
+}
+
 .sidebar-icon {
   width: 20px;
   height: 20px;

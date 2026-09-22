@@ -1,0 +1,85 @@
+- main [ref=f1e3]:
+  - complementary "Danh sách hội thoại" [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - generic [ref=f1e6]:
+        - img "System logo" [ref=f1e7]
+        - generic [ref=f1e12]: serene health
+      - button "Thu gọn danh sách" [active] [ref=f1e13] [cursor=pointer]
+    - button "Tạo hội thoại mới" [ref=f1e17] [cursor=pointer]
+    - button "Tư vấn đau lưng và cột sống" [ref=f1e20] [cursor=pointer]
+    - generic [ref=f1e25]:
+      - generic [ref=f1e26]: "N"
+      - generic [ref=f1e27]:
+        - generic [ref=f1e28]: Nguyễn Văn An
+        - generic [ref=f1e29]: Đang hoạt động
+  - generic [ref=f1e30]:
+    - generic [ref=f1e31]:
+      - generic [ref=f1e32]:
+        - button "Hội thoại (1)" [ref=f1e33] [cursor=pointer]
+        - generic "Lưu ý an toàn y tế" [ref=f1e36]
+      - link "Cấp cứu 115" [ref=f1e40] [cursor=pointer]:
+        - /url: tel:115
+    - generic [ref=f1e44]:
+      - generic [ref=f1e45]:
+        - generic [ref=f1e46]:
+          - generic "Hệ thống trực tuyến" [ref=f1e47]
+          - generic [ref=f1e48]:
+            - heading "Trợ lý Sức khỏe Serene AI" [level=2] [ref=f1e49]
+            - paragraph [ref=f1e50]: Hỗ trợ sàng lọc triệu chứng và giải đáp y tế ban đầu 24/7
+        - button "Đặt lịch khám Bác sĩ" [ref=f1e51] [cursor=pointer]
+      - log "Nội dung hội thoại" [ref=f1e54]:
+        - generic [ref=f1e56]:
+          - paragraph [ref=f1e57]: Tôi bị đau lưng mấy hôm nay, Serene tư vấn giúp tôi với.
+          - time
+        - generic [ref=f1e63]:
+          - generic [ref=f1e64]:
+            - paragraph [ref=f1e65]: Chào bạn, tôi là Serene – trợ lý AI hỗ trợ tư vấn sức khỏe ban đầu (không phải là bác sĩ). Đau lưng có thể xuất phát từ nhiều nguyên nhân khác nhau như căng cơ, sai tư thế, thoái hóa hoặc vấn đề về đĩa đệm.
+            - paragraph [ref=f1e66]: "Để có thể gợi ý hướng xử trí phù hợp hơn, bạn có thể chia sẻ thêm một số thông tin:"
+            - list [ref=f1e67]:
+              - listitem [ref=f1e68]:
+                - strong [ref=f1e69]: "Vị trí và tính chất cơn đau:"
+                - text: Bạn đau ở vùng thắt lưng hay lưng trên? Đau âm ỉ, nhức mỏi hay đau nhói buốt? Cơn đau có lan xuống mông hay cẳng chân không?
+              - listitem [ref=f1e70]:
+                - strong [ref=f1e71]: "Thời gian:"
+                - text: Bạn bị đau từ bao lâu rồi (mới vài ngày hay kéo dài nhiều tuần)?
+              - listitem [ref=f1e72]:
+                - strong [ref=f1e73]: "Hoàn cảnh khởi phát:"
+                - text: Đau có xuất hiện sau khi khiêng vác nặng, xoay người đột ngột, chấn thương hay do ngồi làm việc nhiều không?
+            - separator [ref=f1e74]
+            - heading "Khi nào cần đi khám cấp cứu hoặc khám bác sĩ ngay?" [level=5] [ref=f1e75]
+            - paragraph [ref=f1e76]: "Bạn nên đến cơ sở y tế ngay nếu đau lưng kèm theo bất kỳ dấu hiệu cảnh báo nào sau đây:"
+            - list [ref=f1e77]:
+              - listitem [ref=f1e78]:
+                - text: Đau kèm
+                - strong [ref=f1e79]: tê bì, yếu liệt hoặc mất cảm giác ở chân/bàn chân
+                - text: .
+              - listitem [ref=f1e80]: Mất kiểm soát tiểu tiện hoặc đại tiện (tiểu không tự chủ, bí tiểu).
+              - listitem [ref=f1e81]: Đau dữ dội sau chấn thương, ngã hoặc va đập mạnh.
+              - listitem [ref=f1e82]: Đau lưng kèm sốt, sụt cân không rõ nguyên nhân, hoặc cơn đau không đỡ ngay cả khi nằm nghỉ ngơi.
+            - separator [ref=f1e83]
+            - heading "Một số biện pháp hỗ trợ giảm đau tại nhà (cho trường hợp đau cơ nhẹ do tư thế/vận động):" [level=5] [ref=f1e84]
+            - list [ref=f1e85]:
+              - listitem [ref=f1e86]:
+                - strong [ref=f1e87]: "Chườm ấm hoặc chườm lạnh:"
+                - text: Nếu mới đau trong 24–48 giờ đầu do căng cơ, có thể chườm lạnh 15–20 phút để giảm viêm. Nếu đau nhức mỏi cơ kéo dài, chườm ấm giúp thư giãn cơ.
+              - listitem [ref=f1e88]:
+                - strong [ref=f1e89]: "Nghỉ ngơi và vận động nhẹ nhàng:"
+                - text: Tránh nằm bất động trên giường quá lâu vì có thể làm cứng cơ. Nên đi lại nhẹ nhàng, kéo giãn nhẹ nếu không gây đau thêm.
+              - listitem [ref=f1e90]:
+                - strong [ref=f1e91]: "Điều chỉnh tư thế:"
+                - text: Giữ lưng thẳng khi ngồi, dùng gối đỡ thắt lưng; khi nhấc vật nặng, hãy gập đầu gối và dùng lực của chân thay vì cúi gập lưng.
+              - listitem [ref=f1e92]:
+                - strong [ref=f1e93]: "Tư thế ngủ:"
+                - text: Nằm nghiêng co nhẹ gối (kẹp gối giữa hai chân) hoặc nằm ngửa kê gối dưới khoeo chân để giảm áp lực lên cột sống.
+            - paragraph [ref=f1e94]: Nếu cơn đau kéo dài hoặc ảnh hưởng nhiều đến sinh hoạt, bạn nên đến gặp bác sĩ chuyên khoa Cơ Xương Khớp hoặc Cột sống để được thăm khám và chụp chiếu chẩn đoán chính xác. Nếu bạn cần tìm bác sĩ chuyên khoa hoặc kiểm tra lịch khám tại phòng khám, hãy cho tôi biết nhé!
+          - time
+      - generic [ref=f1e96]:
+        - textbox "Tin nhắn tư vấn" [ref=f1e97]:
+          - /placeholder: Mô tả triệu chứng hoặc đặt câu hỏi y tế cho Serene (Enter để gửi)...
+        - button "Gửi tin nhắn" [disabled] [ref=f1e98]
+  - navigation "Điều hướng tính năng bệnh nhân" [ref=f1e102]:
+    - button "Trò chuyện cùng Serene AI" [ref=f1e103] [cursor=pointer]
+    - button "Đặt lịch khám bác sĩ" [ref=f1e106] [cursor=pointer]
+    - button "Xem lịch hẹn đã đặt" [ref=f1e109] [cursor=pointer]
+    - button "Hồ sơ y tế tự khai" [ref=f1e113] [cursor=pointer]
+    - button "Đăng xuất khỏi tài khoản" [ref=f1e117] [cursor=pointer]

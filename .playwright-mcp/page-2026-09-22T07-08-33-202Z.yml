@@ -1,0 +1,33 @@
+- main [ref=f2e3]:
+  - generic [ref=f2e4]:
+    - region "Serene Health" [ref=f2e5]:
+      - generic [ref=f2e6]:
+        - img "System logo" [ref=f2e7]
+        - generic [ref=f2e12]: serene health
+      - generic [ref=f2e13]:
+        - heading [level=1] [ref=f2e14]:
+          - text: Một khởi đầunhẹ nhàng cho
+          - emphasis [ref=f2e15]: sức khỏe của bạn.
+        - paragraph [ref=f2e16]: Trợ lý y tế thông minh, đồng hành cùng bạn trên hành trình chăm sóc sức khỏe.
+      - generic [ref=f2e29]:
+        - generic [ref=f2e30]: Chăm sóc sức khỏe, theo cách của bạn.
+        - generic [aria-hidden] [ref=f2e31]: Serene Health
+    - generic [ref=f2e33]:
+      - generic [ref=f2e34]:
+        - heading "Chào mừng trở lại" [level=2] [ref=f2e105]
+        - paragraph [ref=f2e36]: Đăng nhập để tiếp tục chăm sóc sức khỏe của bạn.
+      - region "Biểu mẫu xác thực" [ref=f2e37]:
+        - generic [ref=f2e106]:
+          - generic [ref=f2e107]:
+            - generic [ref=f2e108]: Email
+            - textbox "Email" [ref=f2e109]:
+              - /placeholder: email@example.com
+          - generic [ref=f2e110]:
+            - generic [ref=f2e111]: Mật khẩu
+            - textbox "Mật khẩu" [ref=f2e112]:
+              - /placeholder: Nhập mật khẩu
+          - button "Quên mật khẩu?" [ref=f2e114] [cursor=pointer]
+          - button "Đăng nhập" [ref=f2e115] [cursor=pointer]
+          - paragraph [ref=f2e117]:
+            - text: Chưa có tài khoản bệnh nhân?
+            - button "Đăng ký ngay" [ref=f2e118] [cursor=pointer]

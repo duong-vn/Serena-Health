@@ -24,13 +24,15 @@ export function DoctorNewPage() {
   const { doctors, addDoctor } = useDoctorsData()
   const [values, setValues] = useState<DoctorFormValues>(initialDoctorFormValues)
   const [errors, setErrors] = useState<DoctorFormErrors>({})
+  const [requestError, setRequestError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   const updateField = <Key extends keyof DoctorFormValues>(field: Key, value: DoctorFormValues[Key]) => {
     setValues((current) => ({ ...current, [field]: value }))
     setErrors((current) => ({ ...current, [field]: undefined }))
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const nextErrors = validateDoctorForm(values, doctors)
     setErrors(nextErrors)
 
@@ -38,8 +40,16 @@ export function DoctorNewPage() {
       return
     }
 
-    addDoctor(values)
-    navigate('/manager/doctors')
+    setSubmitting(true)
+    setRequestError('')
+    try {
+      await addDoctor(values)
+      navigate('/manager/doctors')
+    } catch (error) {
+      setRequestError(error instanceof Error ? error.message : 'Không thể thêm bác sĩ.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -80,7 +90,7 @@ export function DoctorNewPage() {
             <PrimaryButton variant="ghost" onClick={() => navigate('/manager/doctors')}>
               Hủy
             </PrimaryButton>
-            <PrimaryButton onClick={handleSubmit}>
+            <PrimaryButton disabled={submitting} onClick={handleSubmit}>
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M5 12l4 4L19 6" />
               </svg>
@@ -88,6 +98,7 @@ export function DoctorNewPage() {
             </PrimaryButton>
           </div>
 
+          {requestError ? <p className="doctor-request-error" role="alert">{requestError}</p> : null}
           <DoctorFormSections values={values} errors={errors} includeAccountSection onChange={updateField} />
         </section>
       </main>

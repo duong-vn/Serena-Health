@@ -1,248 +1,103 @@
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
 import type { ReactNode } from 'react'
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+
+import { useApi } from '../../../api/useApi'
 import { Header } from '../../../components/layout/header/Header'
 import { Sidebar } from '../../../components/layout/sidebar/Sidebar'
 import '../../../components/layout/DesktopShell.css'
+import { MetricCard } from '../../../components/ui/MetricCard'
+import { ClockMetricIcon, MessageMetricIcon, PulseMetricIcon, UsersMetricIcon } from '../../../components/ui/metricIcons'
 import { managerSidebarConfig } from '../managerSidebarConfig'
 import './ManagerDashboardPage.css'
 
-import { MetricCard } from '../../../components/ui/MetricCard'
-import { ClockMetricIcon, CurrencyMetricIcon, MessageMetricIcon, PulseMetricIcon } from '../../../components/ui/metricIcons'
-import { FilterButton } from '../../../components/ui/FilterButton'
+interface DashboardData {
+  patients: number
+  doctors: number
+  appointmentsToday: number
+  openConsultations: number
+  completedConsultations: number
+  appointmentsByStatus: Array<{ status: string; count: number }>
+}
 
-const metrics: Array<{
-  label: string
-  value: string
-  delta: string
-  iconClassName: string
-  icon: ReactNode
-}> = [
-  {
-    label: 'Số lượt tư vấn Chatbot',
-    value: '52',
-    delta: '+11.3% so với hôm qua',
-    iconClassName: 'metric-icon-blue',
-    icon: <MessageMetricIcon />,
-  },
-  {
-    label: 'Số lịch hẹn',
-    value: '37',
-    delta: '+5.2% so với hôm qua',
-    iconClassName: 'metric-icon-yellow',
-    icon: <ClockMetricIcon />,
-  },
-  {
-    label: 'Tỷ lệ chuyển sang bác sĩ',
-    value: '18%',
-    delta: '-3.1% so với hôm qua',
-    iconClassName: 'metric-icon-green',
-    icon: <PulseMetricIcon />,
-  },
-  {
-    label: 'Doanh thu',
-    value: '56 trĐ',
-    delta: '+8.7% so với hôm qua',
-    iconClassName: 'metric-icon-pink',
-    icon: <CurrencyMetricIcon />,
-  },
-]
+const statusColors = ['#4a93ff', '#25a867', '#d88400', '#d94f70', '#7f6ad8'] as const
+const statusLabels: Record<string, string> = {
+  CANCELLED: 'Đã hủy',
+  COMPLETED: 'Hoàn thành',
+  CONFIRMED: 'Đã xác nhận',
+  IN_PROGRESS: 'Đang thực hiện',
+  PENDING: 'Đang chờ',
+}
 
-const consultationData = [
-  { time: '6 SA', consultations: 52 },
-  { time: '7 SA', consultations: 62 },
-  { time: '8 SA', consultations: 96 },
-  { time: '9 SA', consultations: 120 },
-  { time: '10 SA', consultations: 139 },
-  { time: '11 SA', consultations: 134 },
-  { time: '12 TR', consultations: 116 },
-  { time: '1 CH', consultations: 92 },
-  { time: '2 CH', consultations: 102 },
-  { time: '3 CH', consultations: 112 },
-  { time: '4 CH', consultations: 86 },
-  { time: '5 CH', consultations: 66 },
-]
-
-const chatbotResults = [
-  { name: 'Đã xử lý', value: 64, color: '#8dc1ff' },
-  { name: 'Chuyển bác sĩ', value: 18, color: '#adecbb' },
-  { name: 'Nguy hiểm', value: 5, color: '#fb93a3' },
-  { name: 'Không rõ', value: 13, color: '#ffdf7d' },
-]
-
-const branchData = [
-  { branch: 'Chi nhánh A', appointments: 320, chatbot: 280, doctor: 92 },
-  { branch: 'Chi nhánh B', appointments: 278, chatbot: 235, doctor: 70 },
-  { branch: 'Chi nhánh C', appointments: 442, chatbot: 382, doctor: 118 },
-]
-
-const symptoms = [
-  '#Đau đầu',
-  '#Sốt',
-  '#Ho',
-  '#Đau bụng',
-  '#Tiêu chảy',
-  '#Mệt mỏi',
-  '#Buồn nôn',
-  '#Mất ngủ',
-  '#Dị ứng',
-  '#Khó thở',
-  '#Chóng mặt',
-]
-
-
-
-function metricFormatter(value: number | string, name: string) {
-  const labels: Record<string, string> = {
-    consultations: 'Lượt tư vấn',
-    appointments: 'Lịch hẹn',
-    chatbot: 'Ca tư vấn Chatbot',
-    doctor: 'Ca tư vấn Bác sĩ',
-  }
-
-  return [`${value} lượt`, labels[name] ?? name]
+function StateCard({ children, role }: { children: ReactNode; role?: 'alert' | 'status' }) {
+  return <section className="dashboard-card dashboard-state-card" role={role}>{children}</section>
 }
 
 export function ManagerDashboardPage() {
+  const { data, error, loading, reload } = useApi<DashboardData>('/manager/dashboard')
+  const statusData = (data?.appointmentsByStatus || []).filter((item) => item.count > 0)
+  const metrics = data ? [
+    { label: 'Tổng bệnh nhân', value: data.patients, icon: <UsersMetricIcon />, iconClassName: 'metric-icon-blue' },
+    { label: 'Tổng bác sĩ', value: data.doctors, icon: <PulseMetricIcon />, iconClassName: 'metric-icon-green' },
+    { label: 'Lịch hẹn hôm nay', value: data.appointmentsToday, icon: <ClockMetricIcon />, iconClassName: 'metric-icon-yellow' },
+    { label: 'Ca tư vấn đang mở', value: data.openConsultations, icon: <MessageMetricIcon />, iconClassName: 'metric-icon-pink' },
+  ] : []
+
   return (
     <div className="desktop-shell-page manager-dashboard-page">
       <Sidebar config={managerSidebarConfig} />
       <Header profileRole={managerSidebarConfig.profileRole} />
       <main className="desktop-shell-main manager-dashboard-main" aria-label="Nội dung chính">
-        <section className="manager-dashboard-content">
+        <section className="manager-dashboard-content" aria-busy={loading}>
           <div className="dashboard-heading-row">
-            <div>
-              <h1>Dashboard</h1>
-              <p>Trang xem thống kê dữ liệu theo thời gian thực của hệ thống Chatbot.</p>
-            </div>
-            <FilterButton label="Hôm nay" />
+            <div><h1>Dashboard</h1><p>Thống kê vận hành hiện tại từ hệ thống Serene Health.</p></div>
           </div>
 
-          <div className="metrics-grid">
-            {metrics.map((metric) => (
-              <MetricCard
-                key={metric.label}
-                label={metric.label}
-                value={metric.value}
-                delta={metric.delta}
-                icon={metric.icon}
-                iconClassName={metric.iconClassName}
-              />
-            ))}
-          </div>
-
-          <div className="dashboard-grid">
-            <section className="dashboard-card line-chart-card">
-              <h2>Lượt tư vấn ChatBot theo từng khung giờ</h2>
-              <div className="chart-frame">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={consultationData} margin={{ top: 12, right: 18, left: -18, bottom: 0 }}>
-                    <CartesianGrid stroke="#d8d8d8" strokeDasharray="3 4" vertical={false} />
-                    <XAxis dataKey="time" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: '#666' }} />
-                    <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: '#666' }} ticks={[0, 35, 70, 105, 140]} />
-                    <Tooltip
-                      cursor={{ stroke: '#8dc1ff', strokeWidth: 1 }}
-                      formatter={(value, name) => metricFormatter(value as number | string, name as string)}
-                      labelFormatter={(label) => `Khung giờ: ${label}`}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="consultations"
-                      name="Lượt tư vấn"
-                      stroke="#4a93ff"
-                      strokeWidth={2}
-                      fill="#dcebff"
-                      fillOpacity={0.65}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+          {loading ? <StateCard role="status">Đang tải dữ liệu dashboard...</StateCard> : null}
+          {error ? <StateCard role="alert"><h2>Không thể tải dashboard</h2><p>{error.message}</p><button className="dashboard-retry-button" onClick={reload} type="button">Thử lại</button></StateCard> : null}
+          {!loading && !error && !data ? <StateCard role="status">Không có dữ liệu dashboard từ máy chủ.</StateCard> : null}
+          {!loading && !error && data ? (
+            <>
+              <div className="metrics-grid">
+                {metrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}
               </div>
-            </section>
-
-            <section className="dashboard-card result-card">
-              <h2>Kết quả xử lý chatbot</h2>
-              <div className="result-card-body">
-                <div className="donut-frame">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={chatbotResults}
-                        dataKey="value"
-                        innerRadius={47}
-                        outerRadius={72}
-                        paddingAngle={4}
-                        stroke="#fff"
-                        strokeWidth={4}
-                      >
-                        {chatbotResults.map((entry) => (
-                          <Cell fill={entry.color} key={entry.name} />
+              <div className="dashboard-grid dashboard-grid-real">
+                <section className="dashboard-card result-card">
+                  <h2>Trạng thái lịch hẹn</h2>
+                  {statusData.length ? (
+                    <div className="result-card-body">
+                      <div className="donut-frame" role="img" aria-label="Biểu đồ phân bổ trạng thái lịch hẹn">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart accessibilityLayer>
+                            <Pie data={statusData} dataKey="count" nameKey="status" innerRadius={47} outerRadius={72} paddingAngle={3} stroke="#fff" strokeWidth={3}>
+                              {statusData.map((entry, index) => <Cell fill={statusColors[index % statusColors.length]} key={entry.status} />)}
+                            </Pie>
+                            <Tooltip formatter={(value, name) => [`${value} lịch hẹn`, statusLabels[String(name)] || String(name)]} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <ul className="result-legend" role="list">
+                        {statusData.map((item, index) => (
+                          <li className="legend-item" key={item.status}>
+                            <span aria-hidden="true" style={{ backgroundColor: statusColors[index % statusColors.length] }} />
+                            <p>{statusLabels[item.status] || item.status}</p>
+                            <strong>{item.count}</strong>
+                          </li>
                         ))}
-                      </Pie>
-                      <Tooltip formatter={(value, name) => [`${value}%`, name]} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="result-legend">
-                  {chatbotResults.map((item) => (
-                    <div className="legend-item" key={item.name}>
-                      <span style={{ backgroundColor: item.color }} />
-                      <p>{item.name}</p>
-                      <strong>{item.value}%</strong>
+                      </ul>
                     </div>
-                  ))}
-                </div>
+                  ) : <p className="dashboard-empty-copy">Chưa có lịch hẹn trong kỳ hiện tại.</p>}
+                </section>
+                <section className="dashboard-card result-card consultation-summary-card">
+                  <h2>Tình trạng tư vấn</h2>
+                  <dl className="dashboard-summary-list">
+                    <div><dt>Đang mở</dt><dd>{data.openConsultations.toLocaleString('vi-VN')}</dd></div>
+                    <div><dt>Đã hoàn thành</dt><dd>{data.completedConsultations.toLocaleString('vi-VN')}</dd></div>
+                  </dl>
+                  <small>Dashboard chỉ hiển thị số liệu máy chủ cung cấp; không suy đoán doanh thu hay số liệu giả.</small>
+                </section>
               </div>
-            </section>
-
-            <section className="dashboard-card branch-card">
-              <h2>Số lịch hẹn / tư vấn theo chi nhánh</h2>
-              <div className="branch-chart-frame">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={branchData} margin={{ top: 8, right: 20, left: -10, bottom: 10 }} barGap={4}>
-                    <CartesianGrid stroke="#d8d8d8" strokeDasharray="3 4" vertical={false} />
-                    <XAxis dataKey="branch" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#666' }} />
-                    <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: '#666' }} ticks={[0, 150, 300, 450, 600]} />
-                    <Tooltip
-                      formatter={(value, name) => metricFormatter(value as number | string, name as string)}
-                      labelFormatter={(label) => `Chi nhánh: ${label}`}
-                    />
-                    <Bar dataKey="appointments" name="Lịch hẹn" fill="#8dc1ff" radius={[6, 6, 0, 0]} />
-                    <Bar dataKey="chatbot" name="Ca tư vấn Chatbot" fill="#ffdf7d" radius={[6, 6, 0, 0]} />
-                    <Bar dataKey="doctor" name="Ca tư vấn Bác sĩ" fill="#adecbb" radius={[6, 6, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="branch-legend">
-                <span className="legend-dot appointment" />
-                Lịch hẹn
-                <span className="legend-dot chatbot" />
-                Ca tư vấn Chatbot
-                <span className="legend-dot doctor" />
-                Ca tư vấn Bác sĩ
-              </div>
-            </section>
-
-            <section className="dashboard-card symptoms-card">
-              <h2>Các triệu chứng phổ biến</h2>
-              <div className="symptom-tags">
-                {symptoms.map((symptom) => (
-                  <span key={symptom}>{symptom}</span>
-                ))}
-              </div>
-            </section>
-          </div>
+            </>
+          ) : null}
         </section>
       </main>
     </div>

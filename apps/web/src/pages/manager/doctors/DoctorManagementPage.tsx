@@ -39,7 +39,7 @@ function DoctorAvatar() {
 
 export function DoctorManagementPage() {
   const navigate = useNavigate()
-  const { doctors, deleteDoctor } = useDoctorsData()
+  const { doctors, deleteDoctor, error, loading, reload } = useDoctorsData()
   const [query, setQuery] = useState('')
   const [specialty, setSpecialty] = useState('all')
   const [branch, setBranch] = useState('all')
@@ -227,7 +227,7 @@ export function DoctorManagementPage() {
                 ]}
               />
             </div>
-            <PrimaryButton onClick={() => navigate('/manager/doctors/new')}>
+            <PrimaryButton disabled={loading || Boolean(error)} onClick={() => navigate('/manager/doctors/new')}>
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 5v14M5 12h14" />
               </svg>
@@ -235,12 +235,21 @@ export function DoctorManagementPage() {
             </PrimaryButton>
           </div>
 
-          <DataTable
-            rows={pagedDoctors}
-            columns={columns}
-            getRowKey={(doctor) => doctor.id}
-            emptyState="Không tìm thấy bác sĩ phù hợp."
-          />
+          {loading ? <p className="doctor-data-state" role="status">Đang tải danh sách bác sĩ...</p> : null}
+          {error ? (
+            <div className="doctor-data-state" role="alert">
+              <p>{error.message}</p>
+              <PrimaryButton variant="secondary" onClick={reload}>Thử lại</PrimaryButton>
+            </div>
+          ) : null}
+          {!loading && !error ? (
+            <DataTable
+              rows={pagedDoctors}
+              columns={columns}
+              getRowKey={(doctor) => doctor.id}
+              emptyState="Chưa có bác sĩ phù hợp."
+            />
+          ) : null}
 
           <div className="doctor-pagination" aria-label="Phân trang">
             <button type="button" disabled={currentPage === 1} onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}>
@@ -279,9 +288,13 @@ export function DoctorManagementPage() {
                 </PrimaryButton>
                 <PrimaryButton
                   variant="danger"
-                  onClick={() => {
-                    deleteDoctor(deleteCandidate.id)
-                    setDeleteCandidate(null)
+                  onClick={async () => {
+                    try {
+                      await deleteDoctor(deleteCandidate.id)
+                      setDeleteCandidate(null)
+                    } catch (deleteError) {
+                      window.alert(deleteError instanceof Error ? deleteError.message : 'Không thể xóa bác sĩ.')
+                    }
                   }}
                 >
                   Xóa
