@@ -17,6 +17,7 @@ import { ExpertModule } from './expert/expert.module.js';
 import { ManagerModule } from './manager/manager.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { ProfileModule } from './profile/profile.module.js';
+import { HealthController } from './health.controller.js';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ProfileModule } from './profile/profile.module.js';
     ExpertModule,
     ManagerModule,
   ],
+  controllers: [HealthController],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
