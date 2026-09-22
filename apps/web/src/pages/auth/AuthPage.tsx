@@ -61,9 +61,13 @@ interface TextFieldProps {
 }
 
 function TextField({ id, label, value, placeholder, type = 'text', error, compact, autoComplete, inputMode, onChange }: TextFieldProps) {
+  const [showPassword, setShowPassword] = useState(false)
+  const isPassword = type === 'password'
+
   return (
-    <label className={compact ? 'auth-field auth-field-compact' : 'auth-field'} htmlFor={id}>
-      <span>{label}</span>
+    <div className={compact ? 'auth-field auth-field-compact' : 'auth-field'}>
+      <label htmlFor={id}>{label}</label>
+      <div className={isPassword ? 'auth-password-input' : undefined}>
       <input
         aria-describedby={error ? `${id}-error` : undefined}
         aria-invalid={Boolean(error)}
@@ -73,11 +77,27 @@ function TextField({ id, label, value, placeholder, type = 'text', error, compac
         inputMode={inputMode}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        type={type}
+        type={isPassword && showPassword ? 'text' : type}
         value={value}
       />
+      {isPassword && (
+        <button
+          type="button"
+          className="auth-password-toggle"
+          aria-label={`${showPassword ? 'Ẩn' : 'Hiện'} ${label.toLowerCase()}`}
+          aria-controls={id}
+          onClick={() => setShowPassword((visible) => !visible)}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+            <circle cx="12" cy="12" r="3" />
+            {showPassword && <path d="m3 3 18 18" />}
+          </svg>
+        </button>
+      )}
+      </div>
       {error ? <p className="auth-field-error" id={`${id}-error`} role="alert">{error}</p> : null}
-    </label>
+    </div>
   )
 }
 
