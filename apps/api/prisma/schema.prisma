@@ -69,6 +69,7 @@ model User {
   consultations  Consultation[] @relation("PatientConsultations")
   messages       Message[]
   expertReviews  ExpertReview[] @relation("ExpertReviews")
+  refreshTokens  RefreshToken[]
 
   @@index([role, active])
 }
@@ -257,4 +258,17 @@ model ExpertReview {
 
   @@unique([conversationId, reviewerId])
   @@index([status, createdAt])
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique @db.VarChar(64)
+  expiresAt DateTime  @db.Timestamptz(3)
+  revokedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
 }

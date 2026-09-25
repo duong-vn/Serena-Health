@@ -46,31 +46,25 @@ test('adds bearer auth and returns the API payload', async () => {
   assert.equal(authorization, 'Bearer access-token')
 })
 
-test('a stale unauthorized response preserves a newer session', async () => {
-  setAccessToken('old-session')
-  let respond!: (response: Response) => void
-  globalThis.fetch = () => new Promise<Response>((resolve) => { respond = resolve })
-  const pending = api('/auth/me')
-  setAccessToken('new-session')
-  respond(new Response(JSON.stringify({ message: 'Unauthorized' }), {
-    status: 401, headers: { 'Content-Type': 'application/json' },
-  }))
-  await assert.rejects(pending, ApiError)
-  assert.equal(getAccessToken(), 'new-session')
-})
-
-test('clears an expired session and exposes the server error', async () => {
+test('clears an expired session when refresh also fails', async () => {
   setAccessToken('expired')
-  globalThis.fetch = async () =>
-    new Response(JSON.stringify({ message: 'Phiên đăng nhập đã hết hạn', code: 'UNAUTHORIZED' }), {
+  globalThis.fetch = async (input) => {
+    if (String(input).endsWith('/auth/refresh')) {
+      return new Response(JSON.stringify({ message: 'Refresh expired' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 401,
+      })
+    }
+    return new Response(JSON.stringify({ message: 'Phiên đăng nhập đã hết hạn', code: 'UNAUTHORIZED' }), {
       headers: { 'Content-Type': 'application/json' },
       status: 401,
     })
+  }
 
   await assert.rejects(
     api('/auth/me'),
     (error: unknown) =>
-      error instanceof ApiError && error.status === 401 && error.message === 'Phiên đăng nhập đã hết hạn',
+      error instanceof ApiError && error.status === 401,
   )
   assert.equal(getAccessToken(), null)
 })

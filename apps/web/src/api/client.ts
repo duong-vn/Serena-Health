@@ -40,9 +40,28 @@ function errorMessage(body: ApiErrorBody | null, status: number) {
   return body?.message || `Yêu cầu thất bại (${status}). Vui lòng thử lại.`
 }
 
-export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
+// Single-flight: concurrent 401s share one refresh request.
+let refreshPromise: Promise<string> | null = null
+
+function refreshAccessToken(): Promise<string> {
+  if (!refreshPromise) {
+    refreshPromise = (async () => {
+      const response = await fetch(`${API_URL}/auth/refresh`, { credentials: 'include', method: 'POST' })
+      if (!response.ok) throw new ApiError('Phiên đăng nhập đã hết hạn.', response.status)
+      const body = (await response.json()) as { accessToken?: string }
+      if (!body.accessToken) throw new ApiError('Phiên đăng nhập đã hết hạn.', response.status)
+      setAccessToken(body.accessToken)
+      return body.accessToken
+    })().finally(() => {
+      refreshPromise = null
+    })
+  }
+  return refreshPromise
+}
+
+async function send<T>(path: string, options: RequestInit, token: string | null): Promise<T> {
   const headers = new Headers(options.headers)
-  const token = getAccessToken()
+  const url = `${API_URL}${path.startsWith('/') ? path : `/${path}`}`
 
   if (options.body && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
@@ -53,10 +72,7 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
 
   let response: Response
   try {
-    response = await fetch(`${API_URL}${path.startsWith('/') ? path : `/${path}`}`, {
-      ...options,
-      headers,
-    })
+    response = await fetch(url, { ...options, credentials: 'include', headers })
   } catch {
     throw new ApiError('Không thể kết nối máy chủ. Vui lòng kiểm tra mạng và thử lại.', 0)
   }
@@ -67,10 +83,6 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
     : null
 
   if (!response.ok) {
-    if (response.status === 401 && token && getAccessToken() === token) {
-      setAccessToken(null)
-      globalThis.dispatchEvent?.(new Event('serene-auth-expired'))
-    }
     throw new ApiError(errorMessage(body as ApiErrorBody | null, response.status), response.status, (body as ApiErrorBody | null)?.code)
   }
 
@@ -79,4 +91,25 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   }
 
   return body as T
+}
+
+export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const token = getAccessToken()
+  try {
+    return await send<T>(path, options, token)
+  } catch (error) {
+    if (!(error instanceof ApiError) || error.status !== 401 || !token || path === '/auth/refresh') throw error
+    if (getAccessToken() !== token) {
+      // Another request already refreshed — retry once with the fresh token.
+      return send<T>(path, options, getAccessToken())
+    }
+    try {
+      await refreshAccessToken()
+    } catch {
+      setAccessToken(null)
+      globalThis.dispatchEvent?.(new Event('serene-auth-expired'))
+      throw new ApiError('Phiên đăng nhập đã hết hạn.', 401)
+    }
+    return send<T>(path, options, getAccessToken())
+  }
 }

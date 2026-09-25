@@ -13,7 +13,7 @@ import { RolesGuard } from './roles.guard.js';
     inject: [ConfigService],
     useFactory: (config: ConfigService) => ({
       secret: config.getOrThrow<string>('JWT_SECRET'),
-      signOptions: { expiresIn: '30m' },
+      signOptions: { expiresIn: '15m' },
     }),
   })],
   controllers: [AuthController],

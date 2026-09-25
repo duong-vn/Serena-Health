@@ -53,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const retry = useCallback(() => setAttempt((value) => value + 1), [])
 
   const logout = useCallback(() => {
+    api('/auth/logout', { method: 'POST' }).catch(() => {})
     setAccessToken(null)
     setUser(null)
     setError(null)

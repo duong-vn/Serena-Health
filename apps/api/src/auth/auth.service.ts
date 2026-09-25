@@ -1,3 +1,5 @@
+import { createHash, randomBytes } from 'node:crypto';
+
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
@@ -18,6 +20,16 @@ const publicUserSelect = {
   gender: true,
   birthday: true,
 } satisfies Prisma.UserSelect;
+
+type PublicUser = Prisma.UserGetPayload<{ select: typeof publicUserSelect }>;
+
+// ponytail: fixed lifetimes — upgrade when remember-me needed.
+const ACCESS_TOKEN_TTL = '15m';
+const REFRESH_TOKEN_DAYS = 7;
+
+function hashRefreshToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
+}
 
 @Injectable()
 export class AuthService {
@@ -56,8 +68,28 @@ export class AuthService {
     if (!user || !user.active || !(await verifyPassword(input.password, user.passwordHash))) {
       throw new UnauthorizedException('Invalid email or password');
     }
-    const { passwordHash: _passwordHash, ...safeUser } = user;
+    const safeUser = await this.prisma.user.findUnique({ where: { id: user.id }, select: publicUserSelect });
+    if (!safeUser) throw new UnauthorizedException('Invalid email or password');
     return this.issue(safeUser);
+  }
+
+  async refresh(refreshToken: string | undefined) {
+    if (!refreshToken) throw new UnauthorizedException('Refresh token required');
+    const record = await this.prisma.refreshToken.findUnique({ where: { tokenHash: hashRefreshToken(refreshToken) } });
+    if (!record || record.revokedAt || record.expiresAt <= new Date()) throw new UnauthorizedException('Invalid or expired refresh token');
+    const user = await this.prisma.user.findUnique({ where: { id: record.userId }, select: publicUserSelect });
+    if (!user?.active) throw new UnauthorizedException('Account is unavailable');
+    await this.prisma.refreshToken.update({ where: { id: record.id }, data: { revokedAt: new Date() } });
+    return this.issue(user);
+  }
+
+  async logout(refreshToken: string | undefined) {
+    if (!refreshToken) return;
+    await this.prisma.refreshToken.updateMany({ where: { tokenHash: hashRefreshToken(refreshToken), revokedAt: null }, data: { revokedAt: new Date() } });
+  }
+
+  async logoutAll(userId: string) {
+    await this.prisma.refreshToken.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt: new Date() } });
   }
 
   async me(actorId: string) {
@@ -73,12 +105,18 @@ export class AuthService {
       select: { id: true, email: true, fullName: true, role: true, active: true },
     });
     if (!user?.active || user.email !== payload.email || user.role !== payload.role) throw new UnauthorizedException();
+    if (!payload.exp) throw new UnauthorizedException();
     return { id: user.id, email: user.email, fullName: user.fullName, role: user.role, expiresAt: payload.exp * 1000 };
   }
 
-  private async issue<T extends { id: string; email: string; role: Role }>(user: T) {
+  private async issue(user: PublicUser) {
+    const refreshToken = randomBytes(48).toString('base64url');
+    const refreshExpiresAt = new Date(Date.now() + REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000);
+    await this.prisma.refreshToken.create({ data: { userId: user.id, tokenHash: hashRefreshToken(refreshToken), expiresAt: refreshExpiresAt } });
     return {
-      accessToken: await this.jwt.signAsync({ sub: user.id, email: user.email, role: user.role }),
+      accessToken: await this.jwt.signAsync({ sub: user.id, email: user.email, role: user.role }, { expiresIn: ACCESS_TOKEN_TTL }),
+      refreshToken,
+      refreshExpiresAt,
       user,
     };
   }
