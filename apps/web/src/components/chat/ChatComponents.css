@@ -272,8 +272,7 @@
   border-radius: 20px;
   padding: 14px 20px;
   color: #2d3748;
-  overflow-wrap: anywhere;
-  word-break: normal;
+  overflow-wrap: break-word;
 }
 
 .chat-bubble-patient {

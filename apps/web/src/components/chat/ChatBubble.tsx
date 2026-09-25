@@ -48,7 +48,7 @@ export function ChatBubble({ message }: ChatBubbleProps) {
       <div className={`chat-bubble chat-bubble-${message.sender}`}>
         {isDoctor && message.doctorName ? <strong>{message.doctorName}</strong> : null}
         <FormattedChatText content={message.text} />
-        <time>{message.time}</time>
+        {message.time ? <time>{message.time}</time> : null}
       </div>
     </div>
   )

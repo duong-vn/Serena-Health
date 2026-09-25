@@ -167,6 +167,7 @@ function ChatSession({
   })
 
   const busy = status === 'streaming' || status === 'submitted'
+  const emptyDraft = !text.trim()
 
   useEffect(() => () => { void stop() }, [stop])
   useEffect(() => {
@@ -243,18 +244,38 @@ function ChatSession({
       >
         <div className="patient-message-content" ref={contentRef}>
         {!messages.length && (
-          <div style={{ textAlign: 'center', margin: 'auto 0', padding: '32px 20px', maxWidth: '460px', alignSelf: 'center' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #e0f2fe, #bae6fd)', color: 'var(--sh-blue-600)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
+          <div className="patient-chat-empty-state">
+            <div className="patient-chat-empty-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
             </div>
-            <h3 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--sh-navy-950)', margin: '0 0 6px' }}>
-              Bắt đầu phiên tư vấn cùng Serene
-            </h3>
-            <p style={{ fontSize: '13px', color: 'var(--sh-slate-500)', lineHeight: 1.5, margin: 0 }}>
+            <h3>Bắt đầu phiên tư vấn cùng Serene</h3>
+            <p>
               Hãy chia sẻ triệu chứng bạn đang gặp phải, vị trí khó chịu và thời gian bắt đầu. Không cần cung cấp thông tin định danh nhạy cảm.
             </p>
+            <div className="patient-prompt-chips">
+              {[
+                'Tôi bị đau đầu âm ỉ kèm chóng mặt từ sáng nay',
+                'Bé nhà tôi 4 tuổi sốt 38.5 độ từ tối qua',
+                'Tôi muốn tư vấn chế độ ăn cho người tiền tiểu đường',
+              ].map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  className="patient-prompt-chip"
+                  onClick={() => {
+                    setText(suggestion)
+                    textareaRef.current?.focus()
+                  }}
+                >
+                  <svg className="prompt-chip-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                  <span>{suggestion}</span>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
@@ -263,6 +284,7 @@ function ChatSession({
             .filter((part) => part.type === 'text')
             .map((part) => part.text)
             .join('')
+          const lastAssistantId = [...messages].reverse().find((item) => item.role === 'assistant')?.id
           return content ? (
             <ChatBubble
               key={message.id}
@@ -273,7 +295,22 @@ function ChatSession({
                 time: times[message.id] ? new Date(times[message.id]).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '',
               }}
             />
-          ) : null
+          ) : (message.role === 'assistant' && message.id === lastAssistantId ? (
+            <div key={message.id} className="chat-bubble-row chat-bubble-row-chatbot">
+              <div className="chat-bubble-avatar">
+                <span className="chat-avatar chat-avatar-bot" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 4v3" />
+                    <path d="M7 9h10a3 3 0 0 1 3 3v4a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-4a3 3 0 0 1 3-3Z" />
+                    <path d="M9 14h.01M15 14h.01" />
+                  </svg>
+                </span>
+              </div>
+              <div className="chat-bubble chat-bubble-chatbot chat-bubble-typing" role="status" aria-label="Serene đang soạn câu trả lời">
+                <span className="chat-typing-dots" aria-hidden="true"><i /><i /><i /></span>
+              </div>
+            </div>
+          ) : null)
         })}
         </div>
       </div>
@@ -304,14 +341,15 @@ function ChatSession({
       )}
 
       {busy && (
-        <div className="patient-response-status" role="status" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 24px', background: '#f8fafc', borderTop: '1px solid var(--sh-slate-100)', fontSize: '12.5px', color: 'var(--sh-blue-600)', fontWeight: 600 }}>
+        <div className="patient-response-status" role="status">
           <span>Serene đang xử lý câu trả lời…</span>
           <button
+            type="button"
+            className="patient-response-stop"
             onClick={() => {
               setStopped(true)
               void stop()
             }}
-            style={{ fontSize: '11.5px', padding: '3px 10px', borderRadius: '4px', border: '1px solid var(--sh-slate-300)', background: '#fff', cursor: 'pointer' }}
           >
             Dừng
           </button>
@@ -320,6 +358,10 @@ function ChatSession({
 
       {/* Modern Composer */}
       <div className="patient-composer-wrapper">
+        <div className="patient-composer-hint" aria-hidden="true">
+          <span>Enter để gửi · Shift + Enter để xuống dòng</span>
+          <span>{text.length}/4000</span>
+        </div>
         <form
           className="patient-composer"
           onSubmit={async (event) => {
