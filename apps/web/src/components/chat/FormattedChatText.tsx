@@ -60,13 +60,24 @@ interface BlockP {
   text: string
 }
 
-type ContentBlock = BlockUl | BlockOl | BlockH2 | BlockH3 | BlockHr | BlockP
+interface BlockCode {
+  type: 'code'
+  text: string
+}
+
+interface BlockImage {
+  type: 'image'
+  alt: string
+  src: string
+}
+
+type ContentBlock = BlockUl | BlockOl | BlockH2 | BlockH3 | BlockHr | BlockP | BlockCode | BlockImage
 
 export function FormattedChatText({ content }: { content: string }) {
   if (!content) return null
 
   // Fast path for short single-line text without markdown
-  if (!content.includes('\n') && !content.includes('*') && !content.includes('#') && !content.includes('---')) {
+  if (!content.includes('\n') && !content.includes('*') && !content.includes('#') && !content.includes('---') && !content.includes('`') && !content.includes('![')) {
     return <p className="chat-text-paragraph">{content}</p>
   }
 
@@ -77,6 +88,23 @@ export function FormattedChatText({ content }: { content: string }) {
   for (let i = 0; i < lines.length; i++) {
     const rawLine = lines[i]
     const trimmed = rawLine.trim()
+
+    const fence = trimmed.match(/^(`{3,}|~{3,})/)
+    if (fence) {
+      if (currentList) { blocks.push(currentList); currentList = null }
+      const code: string[] = []
+      const closing = new RegExp(`^${fence[1][0]}{${fence[1].length},}\\s*$`)
+      while (++i < lines.length && !closing.test(lines[i].trim())) code.push(lines[i])
+      blocks.push({ type: 'code', text: code.join('\n') })
+      continue
+    }
+
+    const image = trimmed.match(/^!\[([^\]]*)\]\(([^\s)]+)\)$/)
+    if (image && (/^https?:\/\//i.test(image[2]) || /^\/(?!\/)/.test(image[2]))) {
+      if (currentList) { blocks.push(currentList); currentList = null }
+      blocks.push({ type: 'image', alt: image[1], src: image[2] })
+      continue
+    }
 
     if (!trimmed) {
       if (currentList) {
@@ -148,6 +176,12 @@ export function FormattedChatText({ content }: { content: string }) {
   return (
     <div className="chat-formatted-body">
       {blocks.map((block, idx) => {
+        if (block.type === 'code') {
+          return <pre key={idx} className="chat-code-block" tabIndex={0} aria-label="Đoạn mã"><code>{block.text}</code></pre>
+        }
+        if (block.type === 'image') {
+          return <img key={idx} className="chat-image" src={block.src} alt={block.alt} loading="lazy" decoding="async" referrerPolicy="no-referrer" />
+        }
         if (block.type === 'hr') {
           return <hr key={idx} className="chat-divider-line" />
         }

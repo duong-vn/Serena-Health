@@ -37,9 +37,55 @@ export default function PatientPage() {
   const { user, logout } = useAuth()
   const [tab, setTab] = useState<'chat' | 'booking' | 'appointments' | 'profile'>('chat')
   const [conversationId, setConversationId] = useState('')
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [mobile, setMobile] = useState(() => window.matchMedia('(max-width: 900px)').matches)
+  const [sidebarOpen, setSidebarOpen] = useState(() => !window.matchMedia('(max-width: 900px)').matches)
   const [profileOpen, setProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
+  const shellRef = useRef<HTMLElement>(null)
+  const sidebarRef = useRef<HTMLElement>(null)
+  const sidebarToggleRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 900px)')
+    const update = () => {
+      setMobile(query.matches)
+      setSidebarOpen(!query.matches)
+      setProfileOpen(false)
+    }
+    query.addEventListener('change', update)
+    return () => query.removeEventListener('change', update)
+  }, [])
+
+  useEffect(() => {
+    const shell = shellRef.current
+    const viewport = window.visualViewport
+    if (!mobile || !shell || !viewport) return
+    const update = () => {
+      // Preserve native pinch zoom; only follow the unzoomed keyboard viewport.
+      if (viewport.scale !== 1) return
+      shell.style.setProperty('--patient-viewport-height', `${viewport.height}px`)
+      shell.style.setProperty('--patient-viewport-top', `${viewport.offsetTop}px`)
+      shell.classList.toggle('has-keyboard', window.innerHeight - viewport.height > 120)
+    }
+    update()
+    viewport.addEventListener('resize', update)
+    viewport.addEventListener('scroll', update)
+    return () => {
+      viewport.removeEventListener('resize', update)
+      viewport.removeEventListener('scroll', update)
+      shell.style.removeProperty('--patient-viewport-height')
+      shell.style.removeProperty('--patient-viewport-top')
+      shell.classList.remove('has-keyboard')
+    }
+  }, [mobile])
+
+  useEffect(() => {
+    if (sidebarOpen) {
+      sidebarRef.current?.querySelector<HTMLButtonElement>('button')?.focus({ preventScroll: true })
+    } else {
+      sidebarToggleRef.current?.focus({ preventScroll: true })
+    }
+  }, [sidebarOpen])
 
   const conversations = useApi<Conversation[]>('/conversations')
   const appointments = useApi<Appointment[]>('/appointments')
@@ -52,6 +98,7 @@ export default function PatientPage() {
   // Handle clicking outside profile dropdown & escape key
   useEffect(() => {
     if (!profileOpen) return
+    profileRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus({ preventScroll: true })
     function handleClickOutside(e: MouseEvent) {
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
         setProfileOpen(false)
@@ -85,6 +132,7 @@ export default function PatientPage() {
       })
       setConversationId(item.id)
       setTab('chat')
+      if (mobile) setSidebarOpen(false)
       conversations.reload()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Không thể tạo hội thoại mới')
@@ -96,9 +144,38 @@ export default function PatientPage() {
   const userInitial = user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'P'
 
   return (
-    <main className="patient-sanctuary">
+    <main className="patient-sanctuary" ref={shellRef}>
+      {mobile && sidebarOpen && (
+        <div className="patient-sidebar-backdrop" aria-hidden="true" onClick={() => { setSidebarOpen(false); setProfileOpen(false) }} />
+      )}
       {/* 1. Sidebar: Thin Conversation History */}
-      <aside className={`patient-sidebar ${sidebarOpen ? '' : 'is-collapsed'}`} aria-label="Danh sách hội thoại">
+      <aside
+        id="patient-conversations"
+        ref={sidebarRef}
+        className={`patient-sidebar ${sidebarOpen ? '' : 'is-collapsed'}`}
+        aria-label="Danh sách hội thoại"
+        role={mobile && sidebarOpen ? 'dialog' : undefined}
+        aria-modal={mobile && sidebarOpen ? true : undefined}
+        inert={!sidebarOpen}
+        onClick={(event) => {
+          if (mobile && (event.target as HTMLElement).closest('[role="menuitem"]')) setSidebarOpen(false)
+        }}
+        onKeyDown={(event) => {
+          if (!mobile || !sidebarOpen) return
+          if (event.key === 'Escape') {
+            if (profileOpen) {
+              setProfileOpen(false)
+              profileRef.current?.querySelector<HTMLButtonElement>('.patient-sidebar-user')?.focus()
+            } else setSidebarOpen(false)
+          }
+          if (event.key !== 'Tab') return
+          const buttons = Array.from(sidebarRef.current?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)') ?? [])
+          const first = buttons[0]
+          const last = buttons.at(-1)
+          if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus() }
+          if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus() }
+        }}
+      >
         <div className="patient-sidebar-brand">
           <div className="patient-brand-link">
             <div className="patient-brand-emblem">
@@ -168,6 +245,7 @@ export default function PatientPage() {
               onClick={() => {
                 setConversationId(c.id)
                 setTab('chat')
+                if (mobile) setSidebarOpen(false)
               }}
             >
               <span className="convo-item-icon" aria-hidden="true">
@@ -311,13 +389,17 @@ export default function PatientPage() {
       </aside>
 
       {/* 2. Main Stage (100% Chat Focus + Overlay Views) */}
-      <section className="patient-stage">
+      <section className="patient-stage" inert={mobile && sidebarOpen}>
         {/* Subtle Top Strip (Emergency badge + Sidebar toggle) */}
         <div className="patient-top-strip">
           <div className="top-strip-left">
             {!sidebarOpen && (
               <button
+                ref={sidebarToggleRef}
                 className="btn-expand-sidebar"
+                aria-label="Mở danh sách hội thoại"
+                aria-controls="patient-conversations"
+                aria-expanded={sidebarOpen}
                 onClick={() => setSidebarOpen(true)}
                 title="Mở danh sách hội thoại"
               >

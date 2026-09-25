@@ -64,14 +64,14 @@ export function PatientChat({ conversationId, onBook }: { conversationId: string
               <p>Phiên hỗ trợ đã được chuyển tiếp sang bác sĩ chuyên khoa</p>
             </div>
           </div>
-          <button className="btn-book-quick" onClick={onBook}>
+          <button className="btn-book-quick" onClick={onBook} aria-label="Đặt lịch khám Bác sĩ" title="Đặt lịch khám Bác sĩ">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
               <line x1="16" y1="2" x2="16" y2="6" />
               <line x1="8" y1="2" x2="8" y2="6" />
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
-            Đặt lịch khám trực tiếp
+            <span>Đặt lịch khám trực tiếp</span>
           </button>
         </div>
 
@@ -121,7 +121,12 @@ function ChatSession({
   const [text, setText] = useState('')
   const lastDraft = useRef('')
   const sending = useRef(false)
-  const bottom = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const following = useRef(true)
+  const [showLatest, setShowLatest] = useState(false)
+  const [times, setTimes] = useState<Record<string, string>>(() => Object.fromEntries(initial.map(message => [message.id, message.createdAt])))
   const [stopped, setStopped] = useState(false)
 
   const transport = useMemo(
@@ -165,8 +170,39 @@ function ChatSession({
 
   useEffect(() => () => { void stop() }, [stop])
   useEffect(() => {
-    bottom.current?.scrollIntoView({ block: 'nearest' })
-  }, [messages])
+    const scroll = scrollRef.current
+    const content = contentRef.current
+    if (!scroll || !content) return
+    const observer = new ResizeObserver(() => {
+      if (following.current) scroll.scrollTop = scroll.scrollHeight
+    })
+    observer.observe(scroll)
+    observer.observe(content)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const missing = messages.filter(message => !times[message.id])
+    if (missing.length) {
+      const now = new Date().toISOString()
+      setTimes(previous => ({ ...previous, ...Object.fromEntries(missing.map(message => [message.id, now])) }))
+    }
+  }, [messages, times])
+
+  useEffect(() => {
+    const input = textareaRef.current
+    if (!input) return
+    const resize = () => {
+      input.style.height = ''
+      if (window.matchMedia('(max-width: 640px)').matches) {
+        input.style.height = '0px'
+        input.style.height = `${text ? Math.min(input.scrollHeight, window.innerHeight * 0.2, 120) : 44}px`
+      }
+    }
+    resize()
+    window.addEventListener('resize', resize)
+    return () => window.removeEventListener('resize', resize)
+  }, [text])
 
   return (
     <section className="patient-chat">
@@ -179,19 +215,33 @@ function ChatSession({
             <p>Hỗ trợ sàng lọc triệu chứng và giải đáp y tế ban đầu 24/7</p>
           </div>
         </div>
-        <button className="btn-book-quick" onClick={onBook}>
+        <button className="btn-book-quick" onClick={onBook} aria-label="Đặt lịch khám Bác sĩ" title="Đặt lịch khám Bác sĩ">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
             <line x1="16" y1="2" x2="16" y2="6" />
             <line x1="8" y1="2" x2="8" y2="6" />
             <line x1="3" y1="10" x2="21" y2="10" />
           </svg>
-          Đặt lịch khám Bác sĩ
+          <span>Đặt lịch khám Bác sĩ</span>
         </button>
       </div>
 
       {/* Messages Scroll Area */}
-      <div className="patient-messages" role="log" aria-label="Nội dung hội thoại" aria-live={busy ? 'off' : 'polite'}>
+      <div className="patient-message-area">
+      <div
+        ref={scrollRef}
+        className="patient-messages"
+        role="log"
+        aria-label="Nội dung hội thoại"
+        aria-live={busy ? 'off' : 'polite'}
+        tabIndex={0}
+        onScroll={(event) => {
+          const element = event.currentTarget
+          following.current = element.scrollHeight - element.scrollTop - element.clientHeight < 64
+          setShowLatest(!following.current)
+        }}
+      >
+        <div className="patient-message-content" ref={contentRef}>
         {!messages.length && (
           <div style={{ textAlign: 'center', margin: 'auto 0', padding: '32px 20px', maxWidth: '460px', alignSelf: 'center' }}>
             <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #e0f2fe, #bae6fd)', color: 'var(--sh-blue-600)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
@@ -220,12 +270,22 @@ function ChatSession({
                 id: message.id,
                 sender: message.role === 'user' ? 'patient' : 'chatbot',
                 text: content,
-                time: '',
+                time: times[message.id] ? new Date(times[message.id]).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '',
               }}
             />
           ) : null
         })}
-        <div ref={bottom} />
+        </div>
+      </div>
+      {showLatest && (
+        <button className="patient-jump-latest" onClick={() => {
+          following.current = true
+          setShowLatest(false)
+          scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'instant' })
+        }}>
+          Tin nhắn mới nhất
+        </button>
+      )}
       </div>
 
       {/* Status alerts */}
@@ -244,7 +304,7 @@ function ChatSession({
       )}
 
       {busy && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 24px', background: '#f8fafc', borderTop: '1px solid var(--sh-slate-100)', fontSize: '12.5px', color: 'var(--sh-blue-600)', fontWeight: 600 }}>
+        <div className="patient-response-status" role="status" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 24px', background: '#f8fafc', borderTop: '1px solid var(--sh-slate-100)', fontSize: '12.5px', color: 'var(--sh-blue-600)', fontWeight: 600 }}>
           <span>Serene đang xử lý câu trả lời…</span>
           <button
             onClick={() => {
@@ -268,6 +328,9 @@ function ChatSession({
             sending.current = true
             const content = text.trim()
             lastDraft.current = content
+            following.current = true
+            setShowLatest(false)
+            textareaRef.current?.focus({ preventScroll: true })
             setText('')
             setStopped(false)
             clearError()
@@ -281,12 +344,13 @@ function ChatSession({
           }}
         >
           <textarea
+            ref={textareaRef}
             id="patient-message"
             aria-label="Tin nhắn tư vấn"
             value={text}
             onChange={(event) => setText(event.target.value)}
             onKeyDown={(event) => {
-              if (event.key === 'Enter' && !event.shiftKey) {
+              if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing && !window.matchMedia('(pointer: coarse)').matches) {
                 event.preventDefault()
                 event.currentTarget.form?.requestSubmit()
               }
@@ -294,13 +358,15 @@ function ChatSession({
             maxLength={4000}
             required
             rows={2}
-            placeholder="Mô tả triệu chứng hoặc đặt câu hỏi y tế cho Serene (Enter để gửi)..."
+            placeholder={window.matchMedia('(max-width: 640px), (pointer: coarse)').matches ? 'Nhập câu hỏi sức khỏe…' : 'Mô tả triệu chứng hoặc đặt câu hỏi y tế cho Serene (Enter để gửi)...'}
           />
           <button
             type="submit"
             className="btn-send-message"
             disabled={busy || !text.trim()}
             title="Gửi tin nhắn"
+            aria-label="Gửi tin nhắn"
+            onPointerDown={(event) => event.preventDefault()}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <line x1="22" y1="2" x2="11" y2="13" />
