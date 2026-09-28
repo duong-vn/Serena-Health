@@ -1643,118 +1643,6 @@
 }
 
 /* ==========================================================================
-   Responsive Breakpoints
-   ========================================================================== */
-
-@media (max-width: 900px) {
-  .patient-sanctuary {
-    position: fixed;
-    top: var(--patient-viewport-top, 0px);
-    left: 0;
-    width: 100%;
-    height: var(--patient-viewport-height, 100dvh);
-    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px);
-    overscroll-behavior: none;
-  }
-
-  .patient-stage {
-    height: 100%;
-    min-width: 0;
-  }
-
-  .patient-sidebar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: min(320px, calc(100% - 32px));
-    min-width: 0;
-    height: 100%;
-    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
-    box-shadow: 12px 0 24px rgba(47, 72, 56, 0.12);
-  }
-
-  .patient-sidebar-backdrop {
-    position: absolute;
-    inset: 0;
-    z-index: 9;
-    background: rgba(29, 42, 36, 0.35);
-  }
-
-  .patient-sidebar-brand { padding: 12px; gap: 8px; }
-  .patient-brand-link { gap: 8px; min-width: 0; }
-  .patient-brand-tagline { font-size: 10px; }
-  .conversation-scroll-sanctuary { min-height: 0; padding-bottom: 12px; overscroll-behavior: contain; }
-  .patient-sidebar-user-container, .patient-sidebar-brand, .patient-sidebar-actions { flex-shrink: 0; }
-  .patient-sidebar-dropdown { max-height: calc(var(--patient-viewport-height, 100dvh) - 100px); overflow-y: auto; }
-  .patient-sidebar button { min-height: 44px; }
-  .patient-sidebar { transition: none; }
-  .btn-toggle-sidebar { width: 44px; height: 44px; }
-  .patient-composer-wrapper { padding-bottom: env(safe-area-inset-bottom, 0px); }
-  .patient-sanctuary.has-keyboard .patient-composer-wrapper { padding-bottom: 0; }
-
-  .patient-chat-canvas {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
-
-@media (max-width: 640px) {
-  .patient-sanctuary::before { display: none; }
-  .patient-top-strip {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: start;
-    gap: 4px 8px;
-    padding: 6px 12px;
-    flex-shrink: 0;
-  }
-  .top-strip-left { display: contents; }
-  .btn-expand-sidebar { grid-column: 1; grid-row: 1; justify-self: start; min-height: 44px; }
-  .top-strip-right { grid-column: 2; grid-row: 1; }
-  .btn-emergency-pill { min-height: 44px; padding: 6px 10px; white-space: nowrap; }
-  .medical-safety-chip {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    padding: 2px 0;
-    font-size: 11px;
-    line-height: 1.4;
-    align-items: flex-start;
-  }
-  .medical-safety-chip svg { flex-shrink: 0; }
-  .patient-chat-canvas { padding: 0 12px 8px; min-width: 0; }
-  .patient-chat-heading { gap: 8px; padding: 6px 0 8px; margin-bottom: 0; }
-  .patient-chat-heading-title { gap: 8px; min-width: 0; }
-  .patient-chat-heading-title h2 { font-size: 15px; line-height: 1.3; }
-  .patient-chat-heading-title p { display: none; }
-  .serene-status-dot { flex-shrink: 0; box-shadow: none; }
-  .btn-book-quick { flex-shrink: 0; width: 44px; height: 44px; padding: 0; justify-content: center; }
-  .btn-book-quick span { display: none; }
-  .btn-book-quick svg { flex-shrink: 0; width: 18px; height: 18px; }
-  .patient-messages { padding: 12px 0; overflow-x: hidden; overflow-anchor: none; }
-  .patient-message-content { gap: 12px; }
-  .patient-sanctuary .chat-bubble-row { gap: 6px; flex-shrink: 0; }
-  .patient-sanctuary .chat-bubble { min-width: 0; max-width: calc(100% - 30px); padding: 10px 12px; border-radius: 16px; box-shadow: none; }
-  .patient-sanctuary .chat-bubble-patient { max-width: 88%; border-bottom-right-radius: 4px; }
-  .patient-sanctuary .chat-bubble-chatbot, .patient-sanctuary .chat-bubble-doctor { border-bottom-left-radius: 4px; }
-  .patient-sanctuary .chat-avatar { width: 24px; height: 24px; }
-  .patient-sanctuary .chat-avatar svg { width: 16px; height: 16px; }
-  .patient-sanctuary .chat-bubble p, .patient-sanctuary .chat-formatted-body { font-size: 16px; line-height: 1.55; }
-  .patient-sanctuary .chat-formatted-body { gap: 8px; }
-  .patient-sanctuary .chat-bubble time { font-size: 11px; line-height: 1.4; color: var(--sh-text-muted); font-variant-numeric: tabular-nums; }
-  .patient-sanctuary .chat-bubble-patient time { color: var(--sh-sage-border); }
-  .patient-sanctuary .chat-system-notice { max-width: 100%; border-radius: 12px; }
-  .patient-composer-wrapper { padding-top: 4px; background: var(--sh-cream-bg); }
-  .patient-composer { gap: 8px; padding: 6px 8px 6px 12px; border-radius: 18px; box-shadow: none; }
-  .patient-composer textarea { min-width: 0; min-height: 44px; max-height: min(120px, 20dvh); font-size: 16px; padding: 10px 0; }
-  .patient-composer textarea::placeholder { color: var(--sh-text-muted); }
-  .btn-send-message { width: 44px; height: 44px; }
-  .patient-response-status { gap: 8px; }
-  .patient-response-status button { min-height: 44px; min-width: 44px; flex-shrink: 0; }
-
-/* ==========================================================================
    Empty state + suggestion chips + typing indicator
    ========================================================================== */
 
@@ -1933,16 +1821,127 @@
   color: var(--sh-text-subtle);
 }
 
-  .patient-prompt-chip {
-    min-height: 44px;
-  }
-  .patient-response-status {
-    padding: 8px 12px;
-  }
-  .patient-composer-hint {
-    display: none;
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .patient-sanctuary {
+    position: fixed;
+    top: var(--patient-viewport-top, 0px);
+    left: 0;
+    width: 100%;
+    height: var(--patient-viewport-height, 100dvh);
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px);
+    overscroll-behavior: none;
   }
 
+  .patient-stage {
+    height: 100%;
+    min-width: 0;
+  }
+
+  .patient-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: min(320px, calc(100% - 32px));
+    min-width: 0;
+    height: 100%;
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+    box-shadow: 12px 0 24px rgba(47, 72, 56, 0.12);
+    z-index: 20;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0s;
+  }
+
+  .patient-sidebar.is-collapsed {
+    transform: translateX(-100%);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0.25s;
+  }
+
+  .patient-sidebar-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+    background: rgba(29, 42, 36, 0.35);
+  }
+
+  .patient-sidebar-brand { padding: 12px; gap: 8px; }
+  .patient-brand-link { gap: 8px; min-width: 0; }
+  .patient-brand-tagline { font-size: 10px; }
+  .conversation-scroll-sanctuary { min-height: 0; padding-bottom: 12px; overscroll-behavior: contain; }
+  .patient-sidebar-user-container, .patient-sidebar-brand, .patient-sidebar-actions { flex-shrink: 0; }
+  .patient-sidebar-dropdown { max-height: calc(var(--patient-viewport-height, 100dvh) - 100px); overflow-y: auto; }
+  .patient-sidebar button { min-height: 44px; }
+  .btn-toggle-sidebar { width: 44px; height: 44px; }
+  .patient-composer-wrapper { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .patient-sanctuary.has-keyboard .patient-composer-wrapper { padding-bottom: 0; }
+
+  .patient-chat-canvas {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .patient-sanctuary::before { display: none; }
+  .patient-top-strip {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 4px 8px;
+    padding: 6px 12px;
+    flex-shrink: 0;
+  }
+  .top-strip-left { display: contents; }
+  .btn-expand-sidebar { grid-column: 1; grid-row: 1; justify-self: start; min-height: 44px; }
+  .top-strip-right { grid-column: 2; grid-row: 1; }
+  .btn-emergency-pill { min-height: 44px; padding: 6px 10px; white-space: nowrap; }
+  .medical-safety-chip {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 2px 0;
+    font-size: 11px;
+    line-height: 1.4;
+    align-items: flex-start;
+  }
+  .medical-safety-chip svg { flex-shrink: 0; }
+  .patient-chat-canvas { padding: 0 12px 8px; min-width: 0; }
+  .patient-chat-heading { gap: 8px; padding: 6px 0 8px; margin-bottom: 0; }
+  .patient-chat-heading-title { gap: 8px; min-width: 0; }
+  .patient-chat-heading-title h2 { font-size: 15px; line-height: 1.3; }
+  .patient-chat-heading-title p { display: none; }
+  .serene-status-dot { flex-shrink: 0; box-shadow: none; }
+  .btn-book-quick { flex-shrink: 0; width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .btn-book-quick span { display: none; }
+  .btn-book-quick svg { flex-shrink: 0; width: 18px; height: 18px; }
+  .patient-messages { padding: 12px 0; overflow-x: hidden; overflow-anchor: none; }
+  .patient-message-content { gap: 12px; }
+  .patient-sanctuary .chat-bubble-row { gap: 6px; flex-shrink: 0; }
+  .patient-sanctuary .chat-bubble { min-width: 0; max-width: calc(100% - 30px); padding: 10px 12px; border-radius: 16px; box-shadow: none; }
+  .patient-sanctuary .chat-bubble-patient { max-width: 88%; border-bottom-right-radius: 4px; }
+  .patient-sanctuary .chat-bubble-chatbot, .patient-sanctuary .chat-bubble-doctor { border-bottom-left-radius: 4px; }
+  .patient-sanctuary .chat-avatar { width: 24px; height: 24px; }
+  .patient-sanctuary .chat-avatar svg { width: 16px; height: 16px; }
+  .patient-sanctuary .chat-bubble p, .patient-sanctuary .chat-formatted-body { font-size: 16px; line-height: 1.55; }
+  .patient-sanctuary .chat-formatted-body { gap: 8px; }
+  .patient-sanctuary .chat-bubble time { font-size: 11px; line-height: 1.4; color: var(--sh-text-muted); font-variant-numeric: tabular-nums; }
+  .patient-sanctuary .chat-bubble-patient time { color: var(--sh-sage-border); }
+  .patient-sanctuary .chat-system-notice { max-width: 100%; border-radius: 12px; }
+  .patient-composer-wrapper { padding-top: 4px; background: var(--sh-cream-bg); }
+  .patient-composer { gap: 8px; padding: 6px 8px 6px 12px; border-radius: 18px; box-shadow: none; }
+  .patient-composer textarea { min-width: 0; min-height: 44px; max-height: min(120px, 20dvh); font-size: 16px; padding: 10px 0; }
+  .patient-composer textarea::placeholder { color: var(--sh-text-muted); }
+  .btn-send-message { width: 44px; height: 44px; }
+  .patient-response-status { gap: 8px; padding: 8px 12px; }
+  .patient-response-status button { min-height: 44px; min-width: 44px; flex-shrink: 0; }
+  .patient-prompt-chip { min-height: 44px; }
+  .patient-composer-hint { display: none; }
   .patient-chat-canvas > div { overflow-y: auto; }
   .chat-welcome-sanctuary { padding: 20px 8px; }
   .chat-welcome-sanctuary h2 { font-size: 22px; }
