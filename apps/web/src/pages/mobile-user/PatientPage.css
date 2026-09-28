@@ -1933,7 +1933,6 @@
   color: var(--sh-text-subtle);
 }
 
-@media (max-width: 640px) {
   .patient-prompt-chip {
     min-height: 44px;
   }
@@ -1943,13 +1942,7 @@
   .patient-composer-hint {
     display: none;
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .chat-typing-dots i {
-    animation: none;
-  }
-}
   .patient-chat-canvas > div { overflow-y: auto; }
   .chat-welcome-sanctuary { padding: 20px 8px; }
   .chat-welcome-sanctuary h2 { font-size: 22px; }
@@ -1997,5 +1990,11 @@
   .slot-chips-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-typing-dots i {
+    animation: none;
   }
 }
