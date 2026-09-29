@@ -272,3 +272,9 @@ model RefreshToken {
 
   @@index([userId, expiresAt])
 }
+
+model SystemSetting {
+  key       String   @id @db.VarChar(100)
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+}

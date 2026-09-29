@@ -1,0 +1,117 @@
+.admin-login-page,
+.admin-settings-page,
+.admin-auth-state {
+  min-height: 100dvh;
+  color: #1d3328;
+  background: #f5f7f3;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.admin-login-page {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.admin-login-card,
+.admin-setting-card {
+  background: #fff;
+  border: 1px solid #dfe7df;
+  border-radius: 20px;
+  box-shadow: 0 18px 55px rgba(34, 63, 44, .07);
+}
+
+.admin-login-card {
+  width: min(100%, 440px);
+  padding: clamp(26px, 5vw, 42px);
+}
+
+.admin-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #2f4838;
+  font-size: 19px;
+  font-weight: 750;
+  letter-spacing: -.03em;
+}
+
+.admin-brand svg { width: 34px; height: 34px; }
+.admin-brand small { color: #728b77; font-size: 12px; font-weight: 600; letter-spacing: 0; }
+.admin-eyebrow { margin: 30px 0 8px; color: #53735a; font-size: 11px; font-weight: 800; letter-spacing: .13em; }
+.admin-login-card h1,
+.admin-settings-main h1 { margin: 0 0 10px; color: #203d2b; font-size: clamp(28px, 4vw, 38px); letter-spacing: -.045em; }
+.admin-muted { margin: 0 0 28px; color: #637169; line-height: 1.55; }
+
+.admin-login-card form,
+.admin-setting-card form { display: grid; gap: 10px; }
+.admin-login-card label,
+.admin-setting-card label { margin-top: 8px; font-size: 13px; font-weight: 700; }
+.admin-login-card input,
+.admin-setting-card select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #cbd8ce;
+  border-radius: 10px;
+  background: #fff;
+  padding: 0 13px;
+  color: #203d2b;
+  font: inherit;
+}
+.admin-login-card input:focus-visible,
+.admin-setting-card select:focus-visible,
+.admin-settings-page button:focus-visible,
+.admin-login-page button:focus-visible,
+.admin-text-link:focus-visible { outline: 3px solid #8fbea1; outline-offset: 2px; }
+.admin-primary-button {
+  min-height: 46px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 10px;
+  background: #2f4838;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+.admin-primary-button:hover:not(:disabled) { background: #203d2b; }
+.admin-primary-button:disabled { opacity: .55; cursor: not-allowed; }
+.admin-text-link { display: inline-block; color: #315b3d; font-size: 13px; font-weight: 650; text-decoration: none; }
+.admin-text-link:hover { text-decoration: underline; }
+.admin-login-card > .admin-text-link { margin-top: 24px; }
+.admin-error { margin: 0; padding: 12px; border-radius: 10px; background: #fff1ef; color: #a83329; font-size: 13px; }
+.admin-error p { margin: 0 0 8px; }
+.admin-error button { border: 0; background: transparent; color: inherit; cursor: pointer; font: inherit; text-decoration: underline; }
+.admin-auth-state { display: grid; place-items: center; }
+
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 78px;
+  padding: 15px clamp(20px, 5vw, 72px);
+  border-bottom: 1px solid #dfe7df;
+  background: #fff;
+}
+.admin-topbar-actions { display: flex; align-items: center; gap: 22px; color: #637169; font-size: 13px; }
+.admin-topbar-actions button { border: 1px solid #cbd8ce; border-radius: 8px; background: #fff; color: #2f4838; cursor: pointer; padding: 9px 13px; font: inherit; }
+.admin-settings-main { width: min(100% - 40px, 780px); margin: 48px auto; }
+.admin-settings-main .admin-eyebrow { margin-top: 30px; }
+.admin-setting-card { margin-top: 32px; padding: clamp(22px, 4vw, 32px); }
+.admin-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.admin-card-heading h2 { margin: 0 0 6px; font-size: 19px; }
+.admin-card-heading p,
+.admin-field-help { margin: 0; color: #637169; font-size: 13px; line-height: 1.5; }
+.admin-active-badge { flex: 0 0 auto; border-radius: 999px; background: #e2f2e7; color: #25623b; padding: 7px 11px; font-size: 12px; font-weight: 750; }
+.admin-current-model { margin: 25px 0 0; color: #203d2b; font-size: 22px; font-weight: 750; overflow-wrap: anywhere; }
+.admin-setting-card .admin-primary-button { justify-self: start; min-width: 150px; padding: 0 20px; }
+.admin-toast { position: fixed; right: 24px; bottom: 24px; z-index: 20; max-width: min(420px, calc(100vw - 48px)); border-radius: 12px; padding: 14px 18px; box-shadow: 0 10px 35px rgba(0, 0, 0, .15); background: #2f4838; color: #fff; font-size: 14px; }
+.admin-toast-error { background: #a83329; }
+
+@media (max-width: 600px) {
+  .admin-topbar-actions span { display: none; }
+  .admin-settings-main { margin-top: 30px; }
+  .admin-card-heading { flex-direction: column; }
+  .admin-setting-card .admin-primary-button { width: 100%; }
+}

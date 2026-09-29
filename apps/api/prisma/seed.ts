@@ -19,17 +19,17 @@ async function seed() {
   // 1. Clinics
   const clinicA = await prisma.clinic.upsert({
     where: { code: 'BRANCH_A' },
-    update: { name: 'Chi nhánh A — Quận 1', address: '123 Nguyễn Huệ, P. Bến Nghé, Quận 1, TP.HCM', phone: '02812345678' },
+    update: {},
     create: { code: 'BRANCH_A', name: 'Chi nhánh A — Quận 1', address: '123 Nguyễn Huệ, P. Bến Nghé, Quận 1, TP.HCM', phone: '02812345678' },
   });
   const clinicB = await prisma.clinic.upsert({
     where: { code: 'BRANCH_B' },
-    update: { name: 'Chi nhánh B — Quận 3', address: '456 Võ Văn Tần, Phường 5, Quận 3, TP.HCM', phone: '02823456789' },
+    update: {},
     create: { code: 'BRANCH_B', name: 'Chi nhánh B — Quận 3', address: '456 Võ Văn Tần, Phường 5, Quận 3, TP.HCM', phone: '02823456789' },
   });
   const clinicC = await prisma.clinic.upsert({
     where: { code: 'BRANCH_C' },
-    update: { name: 'Chi nhánh C — TP. Thủ Đức', address: '789 Lê Văn Việt, P. Tăng Nhơn Phú A, TP. Thủ Đức', phone: '02834567890' },
+    update: {},
     create: { code: 'BRANCH_C', name: 'Chi nhánh C — TP. Thủ Đức', address: '789 Lê Văn Việt, P. Tăng Nhơn Phú A, TP. Thủ Đức', phone: '02834567890' },
   });
 
@@ -75,6 +75,19 @@ async function seed() {
     where: { email: 'manager@clinic.vn' },
     update: {},
     create: { email: 'manager@clinic.vn', fullName: 'Quản Lý Trưởng', passwordHash: commonPassword, role: Role.MANAGER },
+  });
+
+  const adminPassword = await hashPassword('123123');
+  await prisma.user.upsert({
+    where: { email: 'admin@gmail.com' },
+    update: { fullName: 'Quản trị viên', passwordHash: adminPassword, role: Role.MANAGER, active: true },
+    create: { email: 'admin@gmail.com', fullName: 'Quản trị viên', passwordHash: adminPassword, role: Role.MANAGER },
+  });
+
+  await prisma.systemSetting.upsert({
+    where: { key: 'CHATBOT_MODEL' },
+    update: {},
+    create: { key: 'CHATBOT_MODEL', value: process.env.GEMINI_MODEL || 'gemini-3.5-flash' },
   });
 
   await prisma.user.upsert({
@@ -230,7 +243,7 @@ async function seed() {
   for (const doc of doctorsData) {
     const user = await prisma.user.upsert({
       where: { email: doc.email },
-      update: { fullName: doc.fullName, phone: doc.phone, gender: doc.gender },
+      update: {},
       create: {
         email: doc.email,
         fullName: doc.fullName,
@@ -243,16 +256,7 @@ async function seed() {
 
     const profile = await prisma.doctorProfile.upsert({
       where: { userId: user.id },
-      update: {
-        clinicId: doc.clinicId,
-        serviceId: doc.serviceId,
-        biography: doc.biography,
-        degree: doc.degree,
-        licenseNumber: doc.licenseNumber,
-        yearsExperience: doc.yearsExperience,
-        consultationFee: doc.consultationFee,
-        examinationFee: doc.examinationFee,
-      },
+      update: {},
       create: {
         userId: user.id,
         clinicId: doc.clinicId,

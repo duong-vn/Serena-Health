@@ -26,7 +26,10 @@ export const managerSidebarConfig: SidebarConfig = {
     },
     {
       title: 'Chatbot & AI',
-      items: [{ label: 'Giám sát Chatbot', icon: 'bot', href: '/manager/chatbot-monitor' }],
+      items: [
+        { label: 'Giám sát Chatbot', icon: 'bot', href: '/manager/chatbot-monitor' },
+        { label: 'Cấu hình AI', icon: 'bot', href: '/admin/settings' },
+      ],
     },
     {
       title: 'Báo cáo - Thống kê',

@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { AppointmentsModule } from './appointments/appointments.module.js';
+import { AdminSettingsModule } from './admin-settings/admin-settings.module.js';
 import { AiModule } from './ai/ai.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { JwtAuthGuard } from './auth/jwt-auth.guard.js';
@@ -28,6 +29,7 @@ import { HealthController } from './health.controller.js';
     ProfileModule,
     CatalogModule,
     AppointmentsModule,
+    AdminSettingsModule,
     AiModule,
     ConsultationsModule,
     ConversationsModule,

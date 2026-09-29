@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { ConflictException, ForbiddenException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, Logger, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createUIMessageStream, pipeUIMessageStreamToResponse, stepCountIs, streamText, toUIMessageStream, type ModelMessage, type UIMessage } from 'ai';
 import type { Response } from 'express';
@@ -7,12 +7,14 @@ import type { AuthUser } from '../auth/auth.types.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { Prisma } from '../generated/prisma/client.js';
 import { AiToolsService } from './ai-tools.service.js';
+import { AdminSettingsService } from '../admin-settings/admin-settings.service.js';
 import { SERENE_SYSTEM_PROMPT } from './prompt.js';
 import { emergencyGuidance } from './safety.js';
 
 @Injectable()
 export class ChatbotService {
-  constructor(private readonly prisma: PrismaService, private readonly tools: AiToolsService) {}
+  private readonly logger = new Logger(ChatbotService.name);
+  constructor(private readonly prisma: PrismaService, private readonly tools: AiToolsService, private readonly settings: AdminSettingsService) {}
 
   async chat(user: AuthUser, conversationId: string, text: string, response: Response) {
     if (user.role !== 'PATIENT') throw new ForbiddenException();
@@ -25,7 +27,7 @@ export class ChatbotService {
     }
     const emergency = emergencyGuidance(text);
     const apiKey = process.env.GEMINI_API_KEY;
-    const model = process.env.GEMINI_MODEL;
+    const model = emergency ? null : await this.settings.activeModel();
     if (!emergency && (!apiKey || !model)) throw new ServiceUnavailableException('Serene AI is unavailable. Please contact the clinic or use appointment booking.');
     const now = new Date();
     const lease = new Date(now.getTime() + 120_000);
@@ -84,6 +86,7 @@ export class ChatbotService {
         }));
         // ponytail: AI-chat MVP — expose live-care proposals when the doctor flow is ready.
         const { requestDoctorEscalation: _escalation, ...tools } = this.tools.forPatient(user);
+        this.logger.log(`Chatbot model: ${model}`);
         const result = streamText({
           model: createGoogleGenerativeAI({ apiKey })(model!),
           system: `${SERENE_SYSTEM_PROMPT}\nCurrent UTC time: ${now.toISOString()}.`,

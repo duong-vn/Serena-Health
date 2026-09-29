@@ -13,6 +13,8 @@ import { DoctorManagementPage } from './pages/manager/doctors/DoctorManagementPa
 import { DoctorsDataProvider } from './pages/manager/doctors/DoctorsDataContext'
 import { DoctorNewPage } from './pages/manager/doctors/DoctorNewPage'
 import { ManagerReportAnalysisPage } from './pages/manager/report-analysis/ManagerReportAnalysisPage'
+import { AdminLoginPage } from './pages/admin/AdminLoginPage'
+import { AdminSettingsPage } from './pages/admin/AdminSettingsPage'
 
 const roleHome: Record<UserRole, string> = {
   DOCTOR: '/doctor/dashboard',
@@ -28,10 +30,10 @@ function PageLoader() {
   </main>
 }
 
-function ProtectedRoute({ children, roles }: { children: ReactNode; roles: UserRole[] }) {
+function ProtectedRoute({ children, roles, loginPath = '/login' }: { children: ReactNode; roles: UserRole[]; loginPath?: string }) {
   const { error, loading, user } = useAuth()
   if (loading || error) return <PageLoader />
-  if (!user) return <Navigate to="/login" replace />
+  if (!user) return <Navigate to={loginPath} replace />
   if (!roles.includes(user.role)) return <Navigate to={roleHome[user.role]} replace />
   return children
 }
@@ -47,6 +49,9 @@ function App() {
       <Routes>
         <Route path="/" element={<GuestRoute />} />
         <Route path="/login" element={<GuestRoute />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin" element={<Navigate to="/admin/settings" replace />} />
+        <Route path="/admin/settings" element={<ProtectedRoute roles={['MANAGER']} loginPath="/admin/login"><AdminSettingsPage /></ProtectedRoute>} />
         <Route element={<ProtectedRoute roles={['MANAGER']}><DoctorsDataProvider><Outlet /></DoctorsDataProvider></ProtectedRoute>}>
         <Route path="/manager/dashboard" element={<ProtectedRoute roles={['MANAGER']}><ManagerDashboardPage /></ProtectedRoute>} />
         <Route path="/manager/report" element={<ProtectedRoute roles={['MANAGER']}><ManagerReportAnalysisPage /></ProtectedRoute>} />

@@ -5,9 +5,11 @@ import type { Response } from 'express';
 import type { PrismaService } from '../prisma/prisma.service.js';
 import type { AiToolsService } from './ai-tools.service.js';
 import { ChatbotService } from './chatbot.service.js';
+import type { AdminSettingsService } from '../admin-settings/admin-settings.service.js';
 
 const patient = { id: 'patient-1', email: 'patient@example.test', fullName: 'Patient', role: 'PATIENT' as const };
 const response = {} as Response;
+const settings = {} as AdminSettingsService;
 
 test('emergency guidance streams, persists history and releases the generation lease', async () => {
   const saved: Array<{ role: string; content: string; metadata?: { status: string } }> = [];
@@ -22,7 +24,7 @@ test('emergency guidance streams, persists history and releases the generation l
       create: async ({ data }: { data: typeof saved[number] }) => { saved.push(data); return { id: 'saved-message', ...data }; },
     },
   } as unknown as PrismaService;
-  const service = new ChatbotService(prisma, {} as AiToolsService);
+  const service = new ChatbotService(prisma, {} as AiToolsService, settings);
   let complete!: () => void;
   const completed = new Promise<void>((resolve) => { complete = resolve; });
   const server = createServer((_request, reply) => {
@@ -53,7 +55,7 @@ test('emergency guidance streams, persists history and releases the generation l
 });
 
 test('chat rejects non-patients without querying private history', async () => {
-  const service = new ChatbotService({} as PrismaService, {} as AiToolsService);
+  const service = new ChatbotService({} as PrismaService, {} as AiToolsService, settings);
   await assert.rejects(service.chat({ ...patient, role: 'DOCTOR' }, 'other-conversation', 'hello', response), /Forbidden/);
 });
 
@@ -62,18 +64,18 @@ test('chat rejects conversations not owned by current patient', async () => {
     assert.equal(where.patientId, patient.id);
     return null;
   } } } as unknown as PrismaService;
-  const service = new ChatbotService(prisma, {} as AiToolsService);
+  const service = new ChatbotService(prisma, {} as AiToolsService, settings);
   await assert.rejects(service.chat(patient, 'other-conversation', 'hello', response), /Conversation not found/);
 });
 
 test('chat cannot continue after human-care escalation', async () => {
   const prisma = { conversation: { findFirst: async () => ({ consultation: { status: 'DOCTOR_CHAT' } }) } } as unknown as PrismaService;
-  const service = new ChatbotService(prisma, {} as AiToolsService);
+  const service = new ChatbotService(prisma, {} as AiToolsService, settings);
   await assert.rejects(service.chat(patient, 'conversation', 'hello', response), /moved to human care/);
 });
 
 test('concurrent emergency chat is rejected before any provider call', async () => {
   const prisma = { conversation: { findFirst: async () => ({ consultation: null }), updateMany: async () => ({ count: 0 }) } } as unknown as PrismaService;
-  const service = new ChatbotService(prisma, {} as AiToolsService);
+  const service = new ChatbotService(prisma, {} as AiToolsService, settings);
   await assert.rejects(service.chat(patient, 'conversation', 'I cannot breathe', response), /already being generated/);
 });
