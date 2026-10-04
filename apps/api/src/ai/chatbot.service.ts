@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { ConflictException, ForbiddenException, Injectable, Logger, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createOpenAI } from '@ai-sdk/openai';
 import { createUIMessageStream, pipeUIMessageStreamToResponse, stepCountIs, streamText, toUIMessageStream, type ModelMessage, type UIMessage } from 'ai';
 import type { Response } from 'express';
 import type { AuthUser } from '../auth/auth.types.js';
@@ -26,7 +26,8 @@ export class ChatbotService {
       throw new ConflictException('This conversation has moved to human care. Start a new AI conversation.');
     }
     const emergency = emergencyGuidance(text);
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    const baseURL = process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
     const model = emergency ? null : await this.settings.activeModel();
     if (!emergency && (!apiKey || !model)) throw new ServiceUnavailableException('Serene AI is unavailable. Please contact the clinic or use appointment booking.');
     const now = new Date();
@@ -87,8 +88,9 @@ export class ChatbotService {
         // ponytail: AI-chat MVP — expose live-care proposals when the doctor flow is ready.
         const { requestDoctorEscalation: _escalation, ...tools } = this.tools.forPatient(user);
         this.logger.log(`Chatbot model: ${model}`);
+        const openrouter = createOpenAI({ apiKey, baseURL });
         const result = streamText({
-          model: createGoogleGenerativeAI({ apiKey })(model!),
+          model: openrouter(model!),
           system: `${SERENE_SYSTEM_PROMPT}\nCurrent UTC time: ${now.toISOString()}.`,
           messages: [...history, { role: 'user', content: text }],
           tools, stopWhen: stepCountIs(5), maxOutputTokens: 1600,

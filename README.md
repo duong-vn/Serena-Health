@@ -79,8 +79,9 @@ Tạo `apps/api/.env` và điền các biến sau bằng cấu hình của môi 
 | --- | --- |
 | `DATABASE_URL` | Kết nối PostgreSQL của bạn, khớp với database đã chuẩn bị |
 | `JWT_SECRET` | Khóa ký JWT ngẫu nhiên, tối thiểu 32 ký tự; không dùng khóa mẫu hoặc tái sử dụng khóa production |
-| `GEMINI_API_KEY` | API key Gemini của bạn, chỉ lưu phía backend |
-| `GEMINI_MODEL` | Model Gemini, mặc định `gemini-2.5-flash` |
+| `OPENROUTER_API_KEY` | API key OpenRouter của bạn, chỉ lưu phía backend |
+| `OPENROUTER_BASE_URL` | Base URL OpenRouter, mặc định `https://openrouter.ai/api/v1` |
+| `OPENROUTER_DEFAULT_MODEL` | Model mặc định, ví dụ `google/gemini-2.5-flash` hoặc `openai/gpt-4o-mini` |
 | `PORT` | Cổng backend, mặc định `3000` |
 | `FRONTEND_URL` | Origin frontend được phép truy cập API, local là `http://localhost:5173` |
 

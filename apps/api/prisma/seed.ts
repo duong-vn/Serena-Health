@@ -87,7 +87,7 @@ async function seed() {
   await prisma.systemSetting.upsert({
     where: { key: 'CHATBOT_MODEL' },
     update: {},
-    create: { key: 'CHATBOT_MODEL', value: process.env.GEMINI_MODEL || 'gemini-3.5-flash' },
+    create: { key: 'CHATBOT_MODEL', value: process.env.OPENROUTER_DEFAULT_MODEL || 'google/gemini-2.5-flash' },
   });
 
   await prisma.user.upsert({

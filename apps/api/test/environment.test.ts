@@ -2,16 +2,18 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { validateEnvironment } from '../src/config/environment.js';
 
-test('environment validation preserves Gemini configuration for Nest to load', () => {
+test('environment validation preserves OpenRouter configuration for Nest to load', () => {
   const input = {
     DATABASE_URL: 'postgresql://localhost:5432/test',
     JWT_SECRET: 'x'.repeat(32),
-    GEMINI_API_KEY: 'test-only-placeholder',
-    GEMINI_MODEL: 'test-model',
+    OPENROUTER_API_KEY: 'test-only-placeholder',
+    OPENROUTER_BASE_URL: 'https://openrouter.ai/api/v1',
+    OPENROUTER_DEFAULT_MODEL: 'openai/gpt-4.1-mini',
   };
   const valid = validateEnvironment(input);
-  assert.equal(Reflect.get(valid, 'GEMINI_API_KEY'), input.GEMINI_API_KEY);
-  assert.equal(Reflect.get(valid, 'GEMINI_MODEL'), input.GEMINI_MODEL);
+  assert.equal(Reflect.get(valid, 'OPENROUTER_API_KEY'), input.OPENROUTER_API_KEY);
+  assert.equal(Reflect.get(valid, 'OPENROUTER_BASE_URL'), input.OPENROUTER_BASE_URL);
+  assert.equal(Reflect.get(valid, 'OPENROUTER_DEFAULT_MODEL'), input.OPENROUTER_DEFAULT_MODEL);
 });
 
 test('environment validation ensures safety constraints', () => {

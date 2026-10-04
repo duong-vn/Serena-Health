@@ -2,10 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 export const CHATBOT_MODELS = [
-  'gemini-3.8-flash',
-  'gemini-3.6-flash',
-  'gemini-3.5-flash',
-  'gemini-3.5-flash-lite',
+  'google/gemini-2.5-flash',
+  'openai/gpt-4o-mini',
+  'openai/gpt-4o',
+  'anthropic/claude-3.5-haiku',
+  'deepseek/deepseek-chat',
+  'meta-llama/llama-3.3-70b-instruct',
 ] as const;
 
 const SETTING_KEY = 'CHATBOT_MODEL';
@@ -16,7 +18,7 @@ export class AdminSettingsService {
 
   async activeModel(): Promise<string> {
     // ponytail: read per chat for instant cross-instance updates; cache only if this query becomes costly.
-    const fallback = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
+    const fallback = process.env.OPENROUTER_DEFAULT_MODEL || 'google/gemini-2.5-flash';
     try {
       const setting = await this.prisma.systemSetting.findUnique({ where: { key: SETTING_KEY } });
       return setting?.value || fallback;
@@ -27,7 +29,11 @@ export class AdminSettingsService {
   }
 
   async getModel(): Promise<{ model: string; models: readonly string[] }> {
-    return { model: await this.activeModel(), models: CHATBOT_MODELS };
+    const active = await this.activeModel();
+    const models = (CHATBOT_MODELS as readonly string[]).includes(active)
+      ? CHATBOT_MODELS
+      : [active, ...CHATBOT_MODELS];
+    return { model: active, models };
   }
 
   async updateModel(model: string): Promise<{ model: string }> {

@@ -22,15 +22,15 @@ test('model setting reads the database and falls back when absent', async () => 
     },
   } as unknown as PrismaService;
   const service = new AdminSettingsService(prisma);
-  const fallback = process.env.GEMINI_MODEL;
-  process.env.GEMINI_MODEL = 'gemini-3.6-flash';
+  const fallback = process.env.OPENROUTER_DEFAULT_MODEL;
+  process.env.OPENROUTER_DEFAULT_MODEL = 'openai/gpt-4o-mini';
   try {
-    assert.equal(await service.activeModel(), 'gemini-3.6-flash');
-    assert.equal((await service.updateModel('gemini-3.8-flash')).model, 'gemini-3.8-flash');
-    assert.equal(await service.activeModel(), 'gemini-3.8-flash');
+    assert.equal(await service.activeModel(), 'openai/gpt-4o-mini');
+    assert.equal((await service.updateModel('google/gemini-2.5-flash')).model, 'google/gemini-2.5-flash');
+    assert.equal(await service.activeModel(), 'google/gemini-2.5-flash');
   } finally {
-    if (fallback === undefined) delete process.env.GEMINI_MODEL;
-    else process.env.GEMINI_MODEL = fallback;
+    if (fallback === undefined) delete process.env.OPENROUTER_DEFAULT_MODEL;
+    else process.env.OPENROUTER_DEFAULT_MODEL = fallback;
   }
 });
 
@@ -48,8 +48,8 @@ test('admin settings routes require manager role', async () => {
 });
 
 test('model DTO rejects values outside the supported list', () => {
-  const invalid = Object.assign(new UpdateModelDto(), { model: 'gemini-arbitrary' });
-  const valid = Object.assign(new UpdateModelDto(), { model: 'gemini-3.8-flash' });
+  const invalid = Object.assign(new UpdateModelDto(), { model: 'unsupported-arbitrary-model' });
+  const valid = Object.assign(new UpdateModelDto(), { model: 'google/gemini-2.5-flash' });
   assert.ok(validateSync(invalid).length > 0);
   assert.equal(validateSync(valid).length, 0);
 });
@@ -61,12 +61,12 @@ test('admin seed password passes login input validation', () => {
 
 test('model setting falls back to environment before its table is migrated', async () => {
   const prisma = { systemSetting: { findUnique: async () => { throw { code: 'P2021' }; } } } as unknown as PrismaService;
-  const fallback = process.env.GEMINI_MODEL;
-  process.env.GEMINI_MODEL = 'gemini-3.6-flash';
+  const fallback = process.env.OPENROUTER_DEFAULT_MODEL;
+  process.env.OPENROUTER_DEFAULT_MODEL = 'openai/gpt-4o-mini';
   try {
-    assert.equal(await new AdminSettingsService(prisma).activeModel(), 'gemini-3.6-flash');
+    assert.equal(await new AdminSettingsService(prisma).activeModel(), 'openai/gpt-4o-mini');
   } finally {
-    if (fallback === undefined) delete process.env.GEMINI_MODEL;
-    else process.env.GEMINI_MODEL = fallback;
+    if (fallback === undefined) delete process.env.OPENROUTER_DEFAULT_MODEL;
+    else process.env.OPENROUTER_DEFAULT_MODEL = fallback;
   }
 });

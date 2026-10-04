@@ -79,3 +79,29 @@ test('concurrent emergency chat is rejected before any provider call', async () 
   const service = new ChatbotService(prisma, {} as AiToolsService, settings);
   await assert.rejects(service.chat(patient, 'conversation', 'I cannot breathe', response), /already being generated/);
 });
+
+test('non-emergency chat requires OPENROUTER_API_KEY', async () => {
+  const prisma = {
+    conversation: {
+      findFirst: async () => ({ consultation: null }),
+    },
+  } as unknown as PrismaService;
+  const service = new ChatbotService(prisma, {} as AiToolsService, {
+    activeModel: async () => 'google/gemini-2.5-flash',
+  } as AdminSettingsService);
+  const oldOpenRouter = process.env.OPENROUTER_API_KEY;
+  const oldGemini = process.env.GEMINI_API_KEY;
+  delete process.env.OPENROUTER_API_KEY;
+  process.env.GEMINI_API_KEY = 'gemini-key-placeholder';
+  try {
+    await assert.rejects(
+      service.chat(patient, 'conversation', 'I need medical advice', response),
+      /Serene AI is unavailable/,
+    );
+  } finally {
+    if (oldOpenRouter !== undefined) process.env.OPENROUTER_API_KEY = oldOpenRouter;
+    else delete process.env.OPENROUTER_API_KEY;
+    if (oldGemini !== undefined) process.env.GEMINI_API_KEY = oldGemini;
+    else delete process.env.GEMINI_API_KEY;
+  }
+});
