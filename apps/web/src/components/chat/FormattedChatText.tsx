@@ -1,6 +1,10 @@
-import { type ReactNode } from 'react'
+import { memo, type ReactNode } from 'react'
 
 function parseInlineTokens(text: string): ReactNode[] {
+  if (!text.includes('*') && !text.includes('`')) {
+    return [text]
+  }
+
   const parts: ReactNode[] = []
   const regex = /(\*\*.*?\*\*|\*.*?\*|`.*?`)/g
   let lastIdx = 0
@@ -73,7 +77,7 @@ interface BlockImage {
 
 type ContentBlock = BlockUl | BlockOl | BlockH2 | BlockH3 | BlockHr | BlockP | BlockCode | BlockImage
 
-export function FormattedChatText({ content }: { content: string }) {
+export const FormattedChatText = memo(function FormattedChatText({ content }: { content: string }) {
   if (!content) return null
 
   // Fast path for short single-line text without markdown
@@ -217,4 +221,4 @@ export function FormattedChatText({ content }: { content: string }) {
       })}
     </div>
   )
-}
+})

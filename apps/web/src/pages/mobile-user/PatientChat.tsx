@@ -126,7 +126,14 @@ function ChatSession({
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const following = useRef(true)
   const [showLatest, setShowLatest] = useState(false)
-  const [times, setTimes] = useState<Record<string, string>>(() => Object.fromEntries(initial.map(message => [message.id, message.createdAt])))
+  const [times, setTimes] = useState<Record<string, string>>(() =>
+    Object.fromEntries(
+      initial.map((message) => [
+        message.id,
+        new Date(message.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+      ])
+    )
+  )
   const [stopped, setStopped] = useState(false)
 
   const transport = useMemo(
@@ -167,28 +174,41 @@ function ChatSession({
   })
 
   const busy = status === 'streaming' || status === 'submitted'
-  const emptyDraft = !text.trim()
 
   useEffect(() => () => { void stop() }, [stop])
   useEffect(() => {
     const scroll = scrollRef.current
     const content = contentRef.current
     if (!scroll || !content) return
+    let frameId: number | null = null
     const observer = new ResizeObserver(() => {
-      if (following.current) scroll.scrollTop = scroll.scrollHeight
+      if (following.current) {
+        if (frameId) cancelAnimationFrame(frameId)
+        frameId = requestAnimationFrame(() => {
+          scroll.scrollTop = scroll.scrollHeight
+        })
+      }
     })
     observer.observe(scroll)
     observer.observe(content)
-    return () => observer.disconnect()
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId)
+      observer.disconnect()
+    }
   }, [])
 
   useEffect(() => {
-    const missing = messages.filter(message => !times[message.id])
-    if (missing.length) {
-      const now = new Date().toISOString()
-      setTimes(previous => ({ ...previous, ...Object.fromEntries(missing.map(message => [message.id, now])) }))
-    }
-  }, [messages, times])
+    setTimes((previous) => {
+      const missing = messages.filter((m) => !previous[m.id])
+      if (!missing.length) return previous
+      const now = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+      const next = { ...previous }
+      for (const m of missing) {
+        next[m.id] = now
+      }
+      return next
+    })
+  }, [messages])
 
   useEffect(() => {
     const input = textareaRef.current
@@ -279,39 +299,47 @@ function ChatSession({
           </div>
         )}
 
-        {messages.map((message) => {
-          const content = message.parts
-            .filter((part) => part.type === 'text')
-            .map((part) => part.text)
-            .join('')
-          const lastAssistantId = [...messages].reverse().find((item) => item.role === 'assistant')?.id
-          return content ? (
-            <ChatBubble
-              key={message.id}
-              message={{
-                id: message.id,
-                sender: message.role === 'user' ? 'patient' : 'chatbot',
-                text: content,
-                time: times[message.id] ? new Date(times[message.id]).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '',
-              }}
-            />
-          ) : (message.role === 'assistant' && message.id === lastAssistantId ? (
-            <div key={message.id} className="chat-bubble-row chat-bubble-row-chatbot">
-              <div className="chat-bubble-avatar">
-                <span className="chat-avatar chat-avatar-bot" aria-hidden="true">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M12 4v3" />
-                    <path d="M7 9h10a3 3 0 0 1 3 3v4a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-4a3 3 0 0 1 3-3Z" />
-                    <path d="M9 14h.01M15 14h.01" />
-                  </svg>
-                </span>
+        {(() => {
+          let lastAssistantId: string | undefined
+          for (let i = messages.length - 1; i >= 0; i--) {
+            if (messages[i].role === 'assistant') {
+              lastAssistantId = messages[i].id
+              break
+            }
+          }
+          return messages.map((message) => {
+            const content = message.parts
+              .filter((part) => part.type === 'text')
+              .map((part) => part.text)
+              .join('')
+            return content ? (
+              <ChatBubble
+                key={message.id}
+                message={{
+                  id: message.id,
+                  sender: message.role === 'user' ? 'patient' : 'chatbot',
+                  text: content,
+                  time: times[message.id] || '',
+                }}
+              />
+            ) : (message.role === 'assistant' && message.id === lastAssistantId ? (
+              <div key={message.id} className="chat-bubble-row chat-bubble-row-chatbot">
+                <div className="chat-bubble-avatar">
+                  <span className="chat-avatar chat-avatar-bot" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M12 4v3" />
+                      <path d="M7 9h10a3 3 0 0 1 3 3v4a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-4a3 3 0 0 1 3-3Z" />
+                      <path d="M9 14h.01M15 14h.01" />
+                    </svg>
+                  </span>
+                </div>
+                <div className="chat-bubble chat-bubble-chatbot chat-bubble-typing" role="status" aria-label="Serene đang soạn câu trả lời">
+                  <span className="chat-typing-dots" aria-hidden="true"><i /><i /><i /></span>
+                </div>
               </div>
-              <div className="chat-bubble chat-bubble-chatbot chat-bubble-typing" role="status" aria-label="Serene đang soạn câu trả lời">
-                <span className="chat-typing-dots" aria-hidden="true"><i /><i /><i /></span>
-              </div>
-            </div>
-          ) : null)
-        })}
+            ) : null)
+          })
+        })()}
         </div>
       </div>
       {showLatest && (

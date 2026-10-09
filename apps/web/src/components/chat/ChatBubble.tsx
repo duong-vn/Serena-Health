@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { ChatSystemNotice } from './ChatSystemNotice'
 import { FormattedChatText } from './FormattedChatText'
 import type { ChatMessage } from './chatTypes'
@@ -30,7 +31,7 @@ function DoctorAvatar({ label }: { label?: string }) {
   )
 }
 
-export function ChatBubble({ message }: ChatBubbleProps) {
+export const ChatBubble = memo(function ChatBubble({ message }: ChatBubbleProps) {
   if (message.sender === 'system') {
     return <ChatSystemNotice text={message.text} time={message.time} />
   }
@@ -52,4 +53,11 @@ export function ChatBubble({ message }: ChatBubbleProps) {
       </div>
     </div>
   )
-}
+}, (prev, next) => (
+  prev.message.id === next.message.id &&
+  prev.message.sender === next.message.sender &&
+  prev.message.text === next.message.text &&
+  prev.message.time === next.message.time &&
+  prev.message.doctorName === next.message.doctorName &&
+  prev.message.avatarLabel === next.message.avatarLabel
+))

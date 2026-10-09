@@ -1,20 +1,21 @@
-import { type ReactNode } from 'react'
+import { lazy, Suspense, type ReactNode } from 'react'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 
 import { useAuth, type UserRole } from './auth/AuthContext'
-import { DoctorDashboardPage } from './pages/doctor/DoctorDashboardPage'
-import { AuthPage } from './pages/auth/AuthPage'
-import ExpertPage from './pages/expert/ExpertPage'
-import PatientPage from './pages/mobile-user/PatientPage'
-import { ChatbotMonitorPage } from './pages/manager/chatbot-monitor/ChatbotMonitorPage'
-import { ManagerDashboardPage } from './pages/manager/dashboard/ManagerDashboardPage'
-import { DoctorDetailPage } from './pages/manager/doctors/DoctorDetailPage'
-import { DoctorManagementPage } from './pages/manager/doctors/DoctorManagementPage'
 import { DoctorsDataProvider } from './pages/manager/doctors/DoctorsDataContext'
-import { DoctorNewPage } from './pages/manager/doctors/DoctorNewPage'
-import { ManagerReportAnalysisPage } from './pages/manager/report-analysis/ManagerReportAnalysisPage'
-import { AdminLoginPage } from './pages/admin/AdminLoginPage'
-import { AdminSettingsPage } from './pages/admin/AdminSettingsPage'
+
+const AuthPage = lazy(() => import('./pages/auth/AuthPage').then((m) => ({ default: m.AuthPage })))
+const PatientPage = lazy(() => import('./pages/mobile-user/PatientPage'))
+const DoctorDashboardPage = lazy(() => import('./pages/doctor/DoctorDashboardPage').then((m) => ({ default: m.DoctorDashboardPage })))
+const ExpertPage = lazy(() => import('./pages/expert/ExpertPage'))
+const ChatbotMonitorPage = lazy(() => import('./pages/manager/chatbot-monitor/ChatbotMonitorPage').then((m) => ({ default: m.ChatbotMonitorPage })))
+const ManagerDashboardPage = lazy(() => import('./pages/manager/dashboard/ManagerDashboardPage').then((m) => ({ default: m.ManagerDashboardPage })))
+const DoctorDetailPage = lazy(() => import('./pages/manager/doctors/DoctorDetailPage').then((m) => ({ default: m.DoctorDetailPage })))
+const DoctorManagementPage = lazy(() => import('./pages/manager/doctors/DoctorManagementPage').then((m) => ({ default: m.DoctorManagementPage })))
+const DoctorNewPage = lazy(() => import('./pages/manager/doctors/DoctorNewPage').then((m) => ({ default: m.DoctorNewPage })))
+const ManagerReportAnalysisPage = lazy(() => import('./pages/manager/report-analysis/ManagerReportAnalysisPage').then((m) => ({ default: m.ManagerReportAnalysisPage })))
+const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage').then((m) => ({ default: m.AdminLoginPage })))
+const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage').then((m) => ({ default: m.AdminSettingsPage })))
 
 const roleHome: Record<UserRole, string> = {
   DOCTOR: '/doctor/dashboard',
@@ -46,6 +47,7 @@ function GuestRoute() {
 
 function App() {
   return (
+    <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/" element={<GuestRoute />} />
         <Route path="/login" element={<GuestRoute />} />
@@ -65,6 +67,7 @@ function App() {
         <Route path="/expert" element={<ProtectedRoute roles={['EXPERT']}><ExpertPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </Suspense>
   )
 }
 

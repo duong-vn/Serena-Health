@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { memo, useState, type FormEvent } from 'react'
 
 import { ApiError } from '../../api/client'
 import { useAuth } from '../../auth/AuthContext'
@@ -43,10 +43,6 @@ function phoneLooksValid(phone: string) {
   return /^0[35789]\d{8}$/.test(phone.trim())
 }
 
-function FieldError({ message }: { message?: string }) {
-  return message ? <p className="auth-field-error" role="alert">{message}</p> : null
-}
-
 interface TextFieldProps {
   id: string
   label: string
@@ -60,7 +56,7 @@ interface TextFieldProps {
   onChange: (value: string) => void
 }
 
-function TextField({ id, label, value, placeholder, type = 'text', error, compact, autoComplete, inputMode, onChange }: TextFieldProps) {
+const TextField = memo(function TextField({ id, label, value, placeholder, type = 'text', error, compact, autoComplete, inputMode, onChange }: TextFieldProps) {
   const [showPassword, setShowPassword] = useState(false)
   const isPassword = type === 'password'
 
@@ -99,9 +95,9 @@ function TextField({ id, label, value, placeholder, type = 'text', error, compac
       {error ? <p className="auth-field-error" id={`${id}-error`} role="alert">{error}</p> : null}
     </div>
   )
-}
+})
 
-function BrandIllustration() {
+const BrandIllustration = memo(function BrandIllustration() {
   return (
     <section className="auth-brand-panel" aria-label="Serene Health">
       <div className="auth-wordmark"><SystemLogo className="auth-brand-logo" /><span>serene<span className="auth-wordmark-light"> health</span></span></div>
@@ -124,9 +120,9 @@ function BrandIllustration() {
       <div className="auth-brand-footer"><span>Chăm sóc sức khỏe, theo cách của bạn.</span><span aria-hidden="true">Serene Health</span></div>
     </section>
   )
-}
+})
 
-function AuthHeader({ mode }: { mode: AuthMode }) {
+const AuthHeader = memo(function AuthHeader({ mode }: { mode: AuthMode }) {
   const title = mode === 'login' ? 'Chào mừng trở lại' : mode === 'signup' ? 'Bắt đầu hành trình của bạn' : 'Bạn cần hỗ trợ?'
   const description = mode === 'login' ? 'Đăng nhập để tiếp tục chăm sóc sức khỏe của bạn.' : mode === 'signup' ? 'Tạo tài khoản bệnh nhân để sử dụng dịch vụ.' : 'Chúng tôi sẽ hướng dẫn bạn bước tiếp theo.'
   return (
@@ -135,7 +131,7 @@ function AuthHeader({ mode }: { mode: AuthMode }) {
       <p>{description}</p>
     </header>
   )
-}
+})
 
 function apiMessage(error: unknown) {
   return error instanceof ApiError ? error.message : 'Không thể hoàn tất yêu cầu. Vui lòng thử lại.'

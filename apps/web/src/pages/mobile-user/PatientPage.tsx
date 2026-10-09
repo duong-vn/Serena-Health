@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../auth/AuthContext'
 import { api } from '../../api/client'
 import { useApi } from '../../api/useApi'
 import { SystemLogo } from '../../components/brand/SystemLogo'
 import { PatientChat } from './PatientChat'
-import { BookingForm } from './BookingForm'
 import './PatientPage.css'
+
+const BookingForm = lazy(() => import('./BookingForm').then((m) => ({ default: m.BookingForm })))
 
 interface Conversation {
   id: string
@@ -488,12 +489,14 @@ export default function PatientPage() {
                   ✕ Đóng lại
                 </button>
               </div>
-              <BookingForm
-                onBooked={() => {
-                  appointments.reload()
-                  setTab('appointments')
-                }}
-              />
+              <Suspense fallback={<p style={{ color: 'var(--sh-text-muted)', padding: '24px 0' }}>Đang tải biểu mẫu đặt lịch…</p>}>
+                <BookingForm
+                  onBooked={() => {
+                    appointments.reload()
+                    setTab('appointments')
+                  }}
+                />
+              </Suspense>
             </div>
           </div>
         )}

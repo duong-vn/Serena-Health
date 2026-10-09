@@ -64,12 +64,23 @@ export class AuthService {
 
   async login(input: LoginDto) {
     const email = input.email.trim().toLowerCase();
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: { ...publicUserSelect, passwordHash: true },
+    });
     if (!user || !user.active || !(await verifyPassword(input.password, user.passwordHash))) {
       throw new UnauthorizedException('Invalid email or password');
     }
-    const safeUser = await this.prisma.user.findUnique({ where: { id: user.id }, select: publicUserSelect });
-    if (!safeUser) throw new UnauthorizedException('Invalid email or password');
+    const safeUser: PublicUser = {
+      id: user.id,
+      email: user.email,
+      phone: user.phone,
+      fullName: user.fullName,
+      role: user.role,
+      active: user.active,
+      gender: user.gender,
+      birthday: user.birthday,
+    };
     return this.issue(safeUser);
   }
 
