@@ -129,7 +129,7 @@ export default function PatientPage() {
     try {
       const item = await api<Conversation>('/conversations', {
         method: 'POST',
-        body: JSON.stringify({ title: 'Tư vấn sức khỏe tổng quát' }),
+        body: JSON.stringify({ title: 'Hội thoại mới' }),
       })
       setConversationId(item.id)
       setTab('chat')
@@ -445,6 +445,7 @@ export default function PatientPage() {
               key={conversationId}
               conversationId={conversationId}
               onBook={() => setTab('booking')}
+              onConversationUpdated={() => conversations.reload()}
             />
           ) : (
             <div className="chat-welcome-sanctuary">

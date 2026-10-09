@@ -18,7 +18,15 @@ interface Consultation {
   status: string
 }
 
-export function PatientChat({ conversationId, onBook }: { conversationId: string; onBook: () => void }) {
+export function PatientChat({
+  conversationId,
+  onBook,
+  onConversationUpdated,
+}: {
+  conversationId: string
+  onBook: () => void
+  onConversationUpdated?: () => void
+}) {
   const history = useApi<StoredMessage[]>(`/conversations/${conversationId}/messages`)
   const cases = useApi<Consultation[]>('/consultations')
   const consultation = cases.data?.find((item) => item.conversationId === conversationId)
@@ -106,17 +114,26 @@ export function PatientChat({ conversationId, onBook }: { conversationId: string
     )
   }
 
-  return <ChatSession conversationId={conversationId} initial={history.data ?? []} onBook={onBook} />
+  return (
+    <ChatSession
+      conversationId={conversationId}
+      initial={history.data ?? []}
+      onBook={onBook}
+      onConversationUpdated={onConversationUpdated}
+    />
+  )
 }
 
 function ChatSession({
   conversationId,
   initial,
   onBook,
+  onConversationUpdated,
 }: {
   conversationId: string
   initial: StoredMessage[]
   onBook: () => void
+  onConversationUpdated?: () => void
 }) {
   const [text, setText] = useState('')
   const lastDraft = useRef('')
@@ -170,6 +187,9 @@ function ChatSession({
     id: conversationId,
     messages: initialMessages,
     transport,
+    onFinish: () => {
+      onConversationUpdated?.()
+    },
     onError: () => setText((draft) => draft || lastDraft.current),
   })
 

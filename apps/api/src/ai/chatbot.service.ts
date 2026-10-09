@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { ConflictException, ForbiddenException, Injectable, Logger, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { createOpenAI } from '@ai-sdk/openai';
-import { createUIMessageStream, pipeUIMessageStreamToResponse, stepCountIs, streamText, toUIMessageStream, type ModelMessage, type UIMessage } from 'ai';
+import { createUIMessageStream, generateText, pipeUIMessageStreamToResponse, stepCountIs, streamText, toUIMessageStream, type ModelMessage, type UIMessage } from 'ai';
 import type { Response } from 'express';
 import type { AuthUser } from '../auth/auth.types.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -54,6 +54,10 @@ export class ChatbotService {
       const userMessage = await this.prisma.message.create({
         data: { conversationId, role: 'USER', content: text, parts: [{ type: 'text', text }] },
       });
+      const defaultTitles = ['Tư vấn sức khỏe tổng quát', 'Hội thoại mới', 'Cuộc trò chuyện mới'];
+      if (previous.length === 0 || defaultTitles.includes(conversation.title)) {
+        void this.autoGenerateTitle(conversationId, text, emergency ? null : model, apiKey, baseURL);
+      }
       const persist = async (message: UIMessage, status: string) => {
         const content = message.parts.filter((part) => part.type === 'text').map((part) => part.text).join('');
         if (!content && !message.parts.length) return;
@@ -110,6 +114,47 @@ export class ChatbotService {
         where: { id: conversationId, generationExpiresAt: lease },
         data: { generationExpiresAt: null, updatedAt: new Date() },
       });
+    }
+  }
+
+  private async autoGenerateTitle(
+    conversationId: string,
+    text: string,
+    model: string | null,
+    apiKey: string | undefined,
+    baseURL: string,
+  ) {
+    try {
+      let title: string | null = null;
+      if (apiKey && model) {
+        try {
+          const openrouter = createOpenAI({ apiKey, baseURL });
+          const res = await generateText({
+            model: openrouter(model),
+            prompt: `Tóm tắt câu hỏi hoặc triệu chứng sức khỏe sau thành một tiêu đề ngắn gọn (từ 3 đến 6 từ tiếng Việt, không dùng dấu ngoặc, không dùng dấu chấm câu):\n"${text.slice(0, 300)}"`,
+            maxOutputTokens: 25,
+            abortSignal: AbortSignal.timeout(5000),
+          });
+          const cleaned = res.text.replace(/["'«»“”\.]/g, '').trim();
+          if (cleaned && cleaned.length >= 2 && cleaned.length <= 80) {
+            title = cleaned;
+          }
+        } catch {
+          // LLM title generation fallback
+        }
+      }
+      if (!title) {
+        const cleaned = text.replace(/[\r\n]+/g, ' ').trim();
+        title = cleaned.length > 45 ? `${cleaned.slice(0, 42)}…` : cleaned;
+      }
+      if (title && this.prisma.conversation?.update) {
+        await this.prisma.conversation.update({
+          where: { id: conversationId },
+          data: { title },
+        });
+      }
+    } catch (err) {
+      this.logger.warn(`Failed to auto-generate conversation title: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 }

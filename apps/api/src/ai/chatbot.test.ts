@@ -105,3 +105,35 @@ test('non-emergency chat requires OPENROUTER_API_KEY', async () => {
     else delete process.env.GEMINI_API_KEY;
   }
 });
+
+test('chat auto-names the conversation when default title is used', async () => {
+  let updatedTitle: string | null = null;
+  const prisma = {
+    conversation: {
+      findFirst: async () => ({ consultation: null, title: 'Tư vấn sức khỏe tổng quát' }),
+      updateMany: async () => ({ count: 1 }),
+      update: async ({ data }: { data: { title: string } }) => { updatedTitle = data.title; return {}; },
+    },
+    message: {
+      findMany: async () => [],
+      create: async () => ({ id: 'user-msg' }),
+    },
+  } as unknown as PrismaService;
+  const service = new ChatbotService(prisma, {} as AiToolsService, settings);
+  const server = createServer((_req, res) => {
+    void service.chat(patient, 'conversation-1', 'Tôi bị đau ngực và khó thở dữ dội', res as Response)
+      .catch(() => res.destroy());
+  });
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const address = server.address();
+    assert.ok(address && typeof address !== 'string');
+    await fetch(`http://127.0.0.1:${address.port}`);
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    assert.ok(updatedTitle);
+    assert.match(updatedTitle, /đau ngực/i);
+  } finally {
+    server.closeAllConnections();
+    await new Promise<void>((resolve, reject) => server.close((err) => err ? reject(err) : resolve()));
+  }
+});

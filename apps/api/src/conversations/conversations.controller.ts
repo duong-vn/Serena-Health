@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsString, MaxLength, MinLength } from 'class-validator';
 
@@ -20,5 +20,6 @@ export class ConversationsController {
   constructor(private readonly conversations: ConversationsService) {}
   @Get() list(@CurrentUser() user: AuthUser) { return this.conversations.list(user.id); }
   @Post() create(@CurrentUser() user: AuthUser, @Body() input: CreateConversationDto) { return this.conversations.create(user.id, input.title); }
+  @Patch(':id') update(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string, @Body() input: CreateConversationDto) { return this.conversations.update(user.id, id, input.title); }
   @Get(':id/messages') messages(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) { return this.conversations.messages(user.id, id); }
 }

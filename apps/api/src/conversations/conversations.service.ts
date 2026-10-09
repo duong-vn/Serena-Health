@@ -19,6 +19,12 @@ export class ConversationsService {
     return this.prisma.conversation.create({ data: { patientId, title: title.trim() } });
   }
 
+  async update(patientId: string, id: string, title: string) {
+    const conversation = await this.prisma.conversation.findFirst({ where: { id, patientId }, select: { id: true } });
+    if (!conversation) throw new NotFoundException('Conversation not found');
+    return this.prisma.conversation.update({ where: { id }, data: { title: title.trim() } });
+  }
+
   async messages(patientId: string, id: string) {
     const conversation = await this.prisma.conversation.findFirst({ where: { id, patientId }, select: { id: true } });
     if (!conversation) throw new NotFoundException('Conversation not found');
