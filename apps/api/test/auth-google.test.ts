@@ -132,8 +132,8 @@ function setupAuthService(options: {
     prisma as never,
     new JwtService({ secret: SECRET }),
     makeMockConfig(options.clientId ?? 'test-client-id'),
-    googleClient,
   );
+  service.googleClient = googleClient;
 
   return { service, users };
 }

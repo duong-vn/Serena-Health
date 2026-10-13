@@ -35,11 +35,12 @@ function hashRefreshToken(token: string): string {
 
 @Injectable()
 export class AuthService {
+  googleClient?: OAuth2Client;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly config?: ConfigService,
-    private readonly googleClient?: OAuth2Client,
   ) {}
 
   async register(input: RegisterDto) {
