@@ -1,8 +1,10 @@
 import { memo, useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 
 import { ApiError } from '../../api/client'
 import { useAuth } from '../../auth/AuthContext'
 import { SystemLogo } from '../../components/brand/SystemLogo'
+import { GoogleLoginButton } from './GoogleLoginButton'
 import './AuthPage.css'
 
 type AuthMode = 'login' | 'forgot' | 'signup'
@@ -100,9 +102,9 @@ const TextField = memo(function TextField({ id, label, value, placeholder, type 
 const BrandIllustration = memo(function BrandIllustration() {
   return (
     <section className="auth-brand-panel" aria-label="Serene Health">
-      <div className="auth-wordmark"><SystemLogo className="auth-brand-logo" /><span>serene<span className="auth-wordmark-light"> health</span></span></div>
+      <h1 className="auth-wordmark"><SystemLogo className="auth-brand-logo" /><span>Serene<span className="auth-wordmark-light"> Health</span></span></h1>
       <div className="auth-brand-story">
-        <h1>Một khởi đầu<br />nhẹ nhàng cho<br /><em>sức khỏe của bạn.</em></h1>
+        <h2>Một khởi đầu<br />nhẹ nhàng cho<br /><em>sức khỏe của bạn.</em></h2>
         <p>Trợ lý y tế thông minh, đồng hành cùng bạn<br className="auth-desktop-break" /> trên hành trình chăm sóc sức khỏe.</p>
       </div>
       <div className="auth-garden" aria-hidden="true">
@@ -138,7 +140,7 @@ function apiMessage(error: unknown) {
 }
 
 export function AuthPage() {
-  const { login, register } = useAuth()
+  const { login, googleLogin, register } = useAuth()
   const [mode, setMode] = useState<AuthMode>('login')
   const [loginForm, setLoginForm] = useState<LoginForm>(initialLoginForm)
   const [signupForm, setSignupForm] = useState<SignupForm>(initialSignupForm)
@@ -146,6 +148,18 @@ export function AuthPage() {
   const [signupErrors, setSignupErrors] = useState<FormErrors<keyof SignupForm>>({})
   const [status, setStatus] = useState('')
   const [submitting, setSubmitting] = useState(false)
+
+  async function handleGoogleSuccess(credential: string) {
+    setSubmitting(true)
+    setStatus('')
+    try {
+      await googleLogin(credential)
+    } catch (error) {
+      setStatus(apiMessage(error))
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   function showMode(nextMode: AuthMode) {
     setMode(nextMode)
@@ -224,6 +238,8 @@ export function AuthPage() {
           <button className="auth-link-button" onClick={() => showMode('forgot')} type="button">Quên mật khẩu?</button>
         </div>
         <button className="auth-primary-button" disabled={submitting} type="submit">{submitting ? 'Đang đăng nhập...' : 'Đăng nhập'}</button>
+        <div className="auth-divider-text">hoặc</div>
+        <GoogleLoginButton disabled={submitting} mode="login" onError={(err) => setStatus(err)} onSuccess={handleGoogleSuccess} />
         <div className="auth-divider" />
         <p className="auth-register-prompt"><span>Chưa có tài khoản bệnh nhân? </span><button className="auth-inline-link" onClick={() => showMode('signup')} type="button">Đăng ký ngay</button></p>
       </form>
@@ -278,6 +294,8 @@ export function AuthPage() {
           <TextField autoComplete="new-password" compact error={signupErrors.confirmPassword} id="signup-confirm-password" label="Xác nhận mật khẩu" onChange={(value) => update('confirmPassword', value)} placeholder="Nhập lại mật khẩu" type="password" value={signupForm.confirmPassword} />
         </div>
         <button className="auth-primary-button" disabled={submitting} type="submit">{submitting ? 'Đang đăng ký...' : 'Đăng ký'}</button>
+        <div className="auth-divider-text">hoặc</div>
+        <GoogleLoginButton disabled={submitting} mode="signup" onError={(err) => setStatus(err)} onSuccess={handleGoogleSuccess} />
       </form>
     )
   }
@@ -288,16 +306,21 @@ export function AuthPage() {
         <BrandIllustration />
         <section className="auth-content-panel">
           <div className="auth-form-stage">
-            <div className="auth-mobile-brand">
+            <h1 className="auth-mobile-brand">
               <SystemLogo className="auth-mobile-logo" />
-              <span>serene<span className="auth-wordmark-light"> health</span></span>
-            </div>
+              <span>Serene<span className="auth-wordmark-light"> Health</span></span>
+            </h1>
             <AuthHeader mode={mode} />
             <section className={`auth-modal auth-modal-${mode}`} aria-label="Biểu mẫu xác thực">
               {mode === 'login' ? renderLogin() : null}
               {mode === 'forgot' ? renderForgot() : null}
               {mode === 'signup' ? renderSignup() : null}
             </section>
+            <footer className="auth-legal-footer">
+              Bằng việc tiếp tục, bạn đồng ý với{' '}
+              <Link to="/terms">Điều khoản dịch vụ</Link> và{' '}
+              <Link to="/privacy">Chính sách bảo mật</Link> của Serene Health.
+            </footer>
           </div>
         </section>
       </div>

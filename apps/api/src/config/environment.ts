@@ -3,6 +3,7 @@ export interface Environment {
   JWT_SECRET: string;
   PORT: number;
   CORS_ORIGINS: string[];
+  GOOGLE_CLIENT_ID?: string;
 }
 
 export function validateEnvironment(config: Record<string, unknown>): Environment {
@@ -24,5 +25,6 @@ export function validateEnvironment(config: Record<string, unknown>): Environmen
   if (!origins.includes(frontendUrl)) origins.push(frontendUrl);
   if (origins.length === 0) throw new Error('CORS_ORIGINS must contain at least one origin');
 
-  return { ...config, DATABASE_URL: databaseUrl, JWT_SECRET: jwtSecret, PORT: port, CORS_ORIGINS: origins };
+  const googleClientId = typeof config.GOOGLE_CLIENT_ID === 'string' && config.GOOGLE_CLIENT_ID.trim() ? config.GOOGLE_CLIENT_ID.trim() : undefined;
+  return { ...config, DATABASE_URL: databaseUrl, JWT_SECRET: jwtSecret, PORT: port, CORS_ORIGINS: origins, GOOGLE_CLIENT_ID: googleClientId };
 }

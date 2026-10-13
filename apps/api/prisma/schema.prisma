@@ -54,7 +54,8 @@ model User {
   email        String   @unique @db.VarChar(255)
   phone        String?  @db.VarChar(32)
   fullName     String   @db.VarChar(160)
-  passwordHash String   @db.VarChar(255)
+  passwordHash String?  @db.VarChar(255)
+  googleId     String?  @unique @db.VarChar(255)
   role         Role     @default(PATIENT)
   active       Boolean  @default(true)
   gender       Gender?

@@ -1,28 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<svg viewBox="0 0 32 32" width="1024" height="1024" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2F4838" />
-      <stop offset="100%" stop-color="#1E3024" />
+    <linearGradient id="shLogoLeaf1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3D5A47" />
+      <stop offset="100%" stop-color="#24382B" />
     </linearGradient>
-    <linearGradient id="leafGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FAF7F0" />
-      <stop offset="100%" stop-color="#D8E2DC" />
-    </linearGradient>
-    <linearGradient id="leafGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="shLogoLeaf2" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#8EAA95" />
-      <stop offset="100%" stop-color="#55705E" />
+      <stop offset="100%" stop-color="#5E7866" />
     </linearGradient>
   </defs>
-  <rect width="48" height="48" rx="13" fill="url(#bgGrad)" />
-  <g transform="translate(24, 24)">
-    <!-- Vertical organic health petal pair -->
-    <path d="M0 -15 C6 -15 11 -9 11 -3 C11 3 5 9 0 13 C-5 9 -11 3 -11 -3 C-11 -9 -6 -15 0 -15 Z" fill="url(#leafGrad1)" opacity="0.95" />
-    <path d="M0 15 C-6 15 -11 9 -11 3 C-11 -3 -5 -9 0 -13 C5 -9 11 -3 11 3 C11 9 6 15 0 15 Z" fill="url(#leafGrad2)" opacity="0.9" />
-    <!-- Horizontal petal pair -->
-    <path d="M-15 0 C-15 -6 -9 -11 -3 -11 C3 -11 9 -5 13 0 C9 5 3 11 -3 11 C-9 11 -15 6 -15 0 Z" fill="url(#leafGrad2)" opacity="0.85" />
-    <path d="M15 0 C15 6 9 11 3 11 C-3 11 -9 5 -13 0 C-9 -5 -3 -11 3 -11 C9 -11 15 -6 15 0 Z" fill="url(#leafGrad1)" opacity="0.9" />
-    <!-- Central gentle pulse core -->
-    <circle cx="0" cy="0" r="3.2" fill="#2F4838" />
-    <circle cx="0" cy="0" r="1.8" fill="#FAF7F0" />
-  </g>
+  <!-- 4 organic healing petals meeting at center -->
+  <path
+    d="M16 3 C20 3 23.5 7 23.5 11 C23.5 15 19.5 19 16 21.5 C12.5 19 8.5 15 8.5 11 C8.5 7 12 3 16 3 Z"
+    fill="url(#shLogoLeaf1)"
+  />
+  <path
+    d="M16 29 C12 29 8.5 25 8.5 21 C8.5 17 12.5 13 16 10.5 C19.5 13 23.5 17 23.5 21 C23.5 25 20 29 16 29 Z"
+    fill="url(#shLogoLeaf2)"
+  />
+  <path
+    d="M3 16 C3 12 7 8.5 11 8.5 C15 8.5 19 12.5 21.5 16 C19 19.5 15 23.5 11 23.5 C7 23.5 3 20 3 16 Z"
+    fill="url(#shLogoLeaf2)"
+    opacity="0.9"
+  />
+  <path
+    d="M29 16 C29 20 25 23.5 21 23.5 C17 23.5 13 19.5 10.5 16 C13 12.5 17 8.5 21 8.5 C25 8.5 29 12 29 16 Z"
+    fill="url(#shLogoLeaf1)"
+    opacity="0.95"
+  />
+  <!-- Inner gentle pulse core -->
+  <circle cx="16" cy="16" r="3.2" fill="#FAF7F0" />
+  <circle cx="16" cy="16" r="1.6" fill="#2F4838" />
 </svg>

@@ -1,7 +1,9 @@
 import { createHash, randomBytes } from 'node:crypto';
 
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { OAuth2Client } from 'google-auth-library';
 
 import { Prisma, Role } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -36,6 +38,8 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
+    private readonly config?: ConfigService,
+    private readonly googleClient?: OAuth2Client,
   ) {}
 
   async register(input: RegisterDto) {
@@ -68,7 +72,7 @@ export class AuthService {
       where: { email },
       select: { ...publicUserSelect, passwordHash: true },
     });
-    if (!user || !user.active || !(await verifyPassword(input.password, user.passwordHash))) {
+    if (!user || !user.active || !user.passwordHash || !(await verifyPassword(input.password, user.passwordHash))) {
       throw new UnauthorizedException('Invalid email or password');
     }
     const safeUser: PublicUser = {
@@ -82,6 +86,73 @@ export class AuthService {
       birthday: user.birthday,
     };
     return this.issue(safeUser);
+  }
+
+  async googleLogin(credential: string) {
+    const clientId = this.config?.get<string>('GOOGLE_CLIENT_ID') ?? process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      throw new UnauthorizedException('Google authentication is not configured');
+    }
+    const client = this.googleClient ?? new OAuth2Client(clientId);
+    let payload;
+    try {
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: clientId,
+      });
+      payload = ticket.getPayload();
+    } catch {
+      throw new UnauthorizedException('Invalid Google token');
+    }
+
+    if (!payload?.sub || !payload.email) {
+      throw new UnauthorizedException('Invalid Google token payload');
+    }
+    if (!payload.email_verified) {
+      throw new UnauthorizedException('Google email is not verified');
+    }
+
+    const googleId = payload.sub;
+    const email = payload.email.trim().toLowerCase();
+    const fullName = payload.name?.trim() || email.split('@')[0] || 'Google User';
+
+    let user = await this.prisma.user.findUnique({
+      where: { googleId },
+      select: publicUserSelect,
+    });
+
+    if (user) {
+      if (!user.active) throw new UnauthorizedException('Account is unavailable');
+      return this.issue(user);
+    }
+
+    const existingByEmail = await this.prisma.user.findUnique({
+      where: { email },
+      select: { ...publicUserSelect, googleId: true },
+    });
+
+    if (existingByEmail) {
+      if (!existingByEmail.active) throw new UnauthorizedException('Account is unavailable');
+      user = await this.prisma.user.update({
+        where: { id: existingByEmail.id },
+        data: { googleId },
+        select: publicUserSelect,
+      });
+      return this.issue(user);
+    }
+
+    user = await this.prisma.user.create({
+      data: {
+        email,
+        fullName,
+        googleId,
+        role: Role.PATIENT,
+        patientProfile: { create: {} },
+      },
+      select: publicUserSelect,
+    });
+
+    return this.issue(user);
   }
 
   async refresh(refreshToken: string | undefined) {

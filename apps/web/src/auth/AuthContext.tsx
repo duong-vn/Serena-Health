@@ -33,6 +33,7 @@ interface AuthContextValue {
   error: string | null
   retry: () => void
   login: (email: string, password: string) => Promise<AuthUser>
+  googleLogin: (credential: string) => Promise<AuthUser>
   logout: () => void
   register: (input: RegisterInput) => Promise<AuthUser>
 }
@@ -104,6 +105,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         persistSession(
           await api<AuthPayload>('/auth/login', {
             body: JSON.stringify({ email, password }),
+            method: 'POST',
+          }),
+          setUser,
+        ),
+      googleLogin: async (credential) =>
+        persistSession(
+          await api<AuthPayload>('/auth/google', {
+            body: JSON.stringify({ credential }),
             method: 'POST',
           }),
           setUser,

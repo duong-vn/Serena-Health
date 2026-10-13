@@ -6,6 +6,7 @@ import type { Request, Response } from 'express';
 import { AuthService } from './auth.service.js';
 import { CurrentUser } from './current-user.decorator.js';
 import type { AuthUser } from './auth.types.js';
+import { GoogleLoginDto } from './dto/google-login.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { Public } from './public.decorator.js';
@@ -47,6 +48,15 @@ export class AuthController {
   @Post('login')
   async login(@Body() input: LoginDto, @Res({ passthrough: true }) response: Response) {
     const { refreshToken, refreshExpiresAt, ...session } = await this.auth.login(input);
+    this.setRefreshCookie(response, refreshToken, refreshExpiresAt);
+    return session;
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  @Post('google')
+  async googleLogin(@Body() input: GoogleLoginDto, @Res({ passthrough: true }) response: Response) {
+    const { refreshToken, refreshExpiresAt, ...session } = await this.auth.googleLogin(input.credential);
     this.setRefreshCookie(response, refreshToken, refreshExpiresAt);
     return session;
   }

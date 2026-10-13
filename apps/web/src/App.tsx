@@ -16,6 +16,8 @@ const DoctorNewPage = lazy(() => import('./pages/manager/doctors/DoctorNewPage')
 const ManagerReportAnalysisPage = lazy(() => import('./pages/manager/report-analysis/ManagerReportAnalysisPage').then((m) => ({ default: m.ManagerReportAnalysisPage })))
 const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage').then((m) => ({ default: m.AdminLoginPage })))
 const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage').then((m) => ({ default: m.AdminSettingsPage })))
+const PrivacyPolicyPage = lazy(() => import('./pages/legal/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage })))
+const TermsOfServicePage = lazy(() => import('./pages/legal/TermsOfServicePage').then((m) => ({ default: m.TermsOfServicePage })))
 
 const roleHome: Record<UserRole, string> = {
   DOCTOR: '/doctor/dashboard',
@@ -51,6 +53,9 @@ function App() {
       <Routes>
         <Route path="/" element={<GuestRoute />} />
         <Route path="/login" element={<GuestRoute />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/policy" element={<Navigate to="/privacy" replace />} />
+        <Route path="/terms" element={<TermsOfServicePage />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin" element={<Navigate to="/admin/settings" replace />} />
         <Route path="/admin/settings" element={<ProtectedRoute roles={['MANAGER']} loginPath="/admin/login"><AdminSettingsPage /></ProtectedRoute>} />
