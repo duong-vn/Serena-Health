@@ -63,7 +63,7 @@ MVP **chưa sử dụng RAG, embeddings hoặc vector database**. Tool calling d
 
 - **Node.js 22.12+** hoặc Node.js 24 LTS, npm đi kèm.
 - **Docker Compose** để chạy PostgreSQL, hoặc một PostgreSQL instance riêng.
-- **Gemini API key** từ [Google AI Studio](https://aistudio.google.com/) để dùng phản hồi AI.
+- **OpenRouter API key** (hoặc OpenAI-compatible API key) để dùng phản hồi AI.
 
 Tại thư mục gốc dự án:
 
@@ -81,7 +81,7 @@ Tạo `apps/api/.env` và điền các biến sau bằng cấu hình của môi 
 | `JWT_SECRET` | Khóa ký JWT ngẫu nhiên, tối thiểu 32 ký tự; không dùng khóa mẫu hoặc tái sử dụng khóa production |
 | `OPENROUTER_API_KEY` | API key OpenRouter của bạn, chỉ lưu phía backend |
 | `OPENROUTER_BASE_URL` | Base URL OpenRouter, mặc định `https://openrouter.ai/api/v1` |
-| `OPENROUTER_DEFAULT_MODEL` | Model mặc định, ví dụ `google/gemini-2.5-flash` hoặc `openai/gpt-4o-mini` |
+| `OPENROUTER_DEFAULT_MODEL` | Model mặc định, ví dụ `openai/gpt-4o-mini` hoặc model tùy chỉnh |
 | `PORT` | Cổng backend, mặc định `3000` |
 | `FRONTEND_URL` | Origin frontend được phép truy cập API, local là `http://localhost:5173` |
 

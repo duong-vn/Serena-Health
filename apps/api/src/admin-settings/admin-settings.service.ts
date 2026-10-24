@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 export const CHATBOT_MODELS = [
-  'google/gemini-2.5-flash',
   'openai/gpt-4o-mini',
   'openai/gpt-4o',
   'anthropic/claude-3.5-haiku',
@@ -18,7 +17,7 @@ export class AdminSettingsService {
 
   async activeModel(): Promise<string> {
     // ponytail: read per chat for instant cross-instance updates; cache only if this query becomes costly.
-    const fallback = process.env.OPENROUTER_DEFAULT_MODEL || 'google/gemini-2.5-flash';
+    const fallback = process.env.OPENROUTER_DEFAULT_MODEL || 'openai/gpt-4o-mini';
     try {
       const setting = await this.prisma.systemSetting.findUnique({ where: { key: SETTING_KEY } });
       return setting?.value || fallback;

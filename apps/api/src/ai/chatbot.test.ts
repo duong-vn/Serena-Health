@@ -87,12 +87,10 @@ test('non-emergency chat requires OPENROUTER_API_KEY', async () => {
     },
   } as unknown as PrismaService;
   const service = new ChatbotService(prisma, {} as AiToolsService, {
-    activeModel: async () => 'google/gemini-2.5-flash',
+    activeModel: async () => 'openai/gpt-4o-mini',
   } as AdminSettingsService);
   const oldOpenRouter = process.env.OPENROUTER_API_KEY;
-  const oldGemini = process.env.GEMINI_API_KEY;
   delete process.env.OPENROUTER_API_KEY;
-  process.env.GEMINI_API_KEY = 'gemini-key-placeholder';
   try {
     await assert.rejects(
       service.chat(patient, 'conversation', 'I need medical advice', response),
@@ -101,8 +99,6 @@ test('non-emergency chat requires OPENROUTER_API_KEY', async () => {
   } finally {
     if (oldOpenRouter !== undefined) process.env.OPENROUTER_API_KEY = oldOpenRouter;
     else delete process.env.OPENROUTER_API_KEY;
-    if (oldGemini !== undefined) process.env.GEMINI_API_KEY = oldGemini;
-    else delete process.env.GEMINI_API_KEY;
   }
 });
 

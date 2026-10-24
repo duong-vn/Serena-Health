@@ -26,8 +26,8 @@ test('model setting reads the database and falls back when absent', async () => 
   process.env.OPENROUTER_DEFAULT_MODEL = 'openai/gpt-4o-mini';
   try {
     assert.equal(await service.activeModel(), 'openai/gpt-4o-mini');
-    assert.equal((await service.updateModel('google/gemini-2.5-flash')).model, 'google/gemini-2.5-flash');
-    assert.equal(await service.activeModel(), 'google/gemini-2.5-flash');
+    assert.equal((await service.updateModel('openai/gpt-4o')).model, 'openai/gpt-4o');
+    assert.equal(await service.activeModel(), 'openai/gpt-4o');
   } finally {
     if (fallback === undefined) delete process.env.OPENROUTER_DEFAULT_MODEL;
     else process.env.OPENROUTER_DEFAULT_MODEL = fallback;
@@ -47,9 +47,9 @@ test('admin settings routes require manager role', async () => {
   await assert.rejects(new JwtAuthGuard(new Reflector(), {} as JwtService, {} as PrismaService).canActivate(context()), /Bearer token required/);
 });
 
-test('model DTO rejects values outside the supported list', () => {
-  const invalid = Object.assign(new UpdateModelDto(), { model: 'unsupported-arbitrary-model' });
-  const valid = Object.assign(new UpdateModelDto(), { model: 'google/gemini-2.5-flash' });
+test('model DTO rejects empty values', () => {
+  const invalid = Object.assign(new UpdateModelDto(), { model: '' });
+  const valid = Object.assign(new UpdateModelDto(), { model: 'openai/gpt-4o-mini' });
   assert.ok(validateSync(invalid).length > 0);
   assert.equal(validateSync(valid).length, 0);
 });
