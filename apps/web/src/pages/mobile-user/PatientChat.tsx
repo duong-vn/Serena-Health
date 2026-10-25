@@ -128,16 +128,18 @@ export function PatientChat({
   )
 }
 
-function ChatSession({
+export function ChatSession({
   conversationId,
   initial,
   onBook,
   onConversationUpdated,
+  guest = false,
 }: {
   conversationId: string
   initial: StoredMessage[]
-  onBook: () => void
+  onBook?: () => void
   onConversationUpdated?: () => void
+  guest?: boolean
 }) {
   const [text, setText] = useState('')
   const lastDraft = useRef('')
@@ -160,13 +162,22 @@ function ChatSession({
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
-        api: `${API_URL}/ai/chat`,
-        headers: () => ({ Authorization: `Bearer ${getAccessToken()}` }),
+        api: `${API_URL}/ai/${guest ? 'guest/chat' : 'chat'}`,
+        headers: (): Record<string, string> => guest ? {} : { Authorization: `Bearer ${getAccessToken()}` },
         prepareSendMessagesRequest: ({ messages }) => {
           const last = messages.at(-1)
           return {
             body: {
-              conversationId,
+              ...(guest ? {
+                history: messages.slice(0, -1)
+                  .filter((message) => message.role === 'user' || message.role === 'assistant')
+                  .map((message) => ({
+                    role: message.role,
+                    content: message.parts.filter((part) => part.type === 'text').map((part) => part.text).join('').slice(0, 4000),
+                  }))
+                  .filter((message) => message.content.trim())
+                  .slice(-12),
+              } : { conversationId }),
               text:
                 last?.parts
                   .filter((part) => part.type === 'text')
@@ -176,7 +187,7 @@ function ChatSession({
           }
         },
       }),
-    [conversationId]
+    [conversationId, guest]
   )
 
   const initialMessages: UIMessage[] = initial
@@ -257,12 +268,12 @@ function ChatSession({
           <span className="serene-status-dot" title="Hệ thống trực tuyến" />
           <div>
             <h2>Trợ lý Sức khỏe Serene AI</h2>
-            <p>Hỗ trợ sàng lọc triệu chứng và giải đáp y tế ban đầu 24/7</p>
+            <p>{guest ? 'Chat khách: nội dung mất khi tải lại trang. Đăng nhập để lưu hội thoại.' : 'Hỗ trợ sàng lọc triệu chứng và giải đáp y tế ban đầu 24/7'}</p>
           </div>
         </div>
         <div className="patient-chat-heading-actions">
-          <ChatbotFeaturesPopover />
-          <button className="btn-book-quick" onClick={onBook} aria-label="Đặt lịch khám Bác sĩ" title="Đặt lịch khám Bác sĩ">
+          {!guest && <ChatbotFeaturesPopover />}
+          {onBook && <button className="btn-book-quick" onClick={onBook} aria-label="Đặt lịch khám Bác sĩ" title="Đặt lịch khám Bác sĩ">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
               <line x1="16" y1="2" x2="16" y2="6" />
@@ -270,7 +281,7 @@ function ChatSession({
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
             <span>Đặt lịch khám Bác sĩ</span>
-          </button>
+          </button>}
         </div>
       </div>
 

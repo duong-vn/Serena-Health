@@ -6,6 +6,7 @@ import { DoctorsDataProvider } from './pages/manager/doctors/DoctorsDataContext'
 
 const AuthPage = lazy(() => import('./pages/auth/AuthPage').then((m) => ({ default: m.AuthPage })))
 const PatientPage = lazy(() => import('./pages/mobile-user/PatientPage'))
+const GuestChatPage = lazy(() => import('./pages/mobile-user/GuestChatPage').then((m) => ({ default: m.GuestChatPage })))
 const DoctorDashboardPage = lazy(() => import('./pages/doctor/DoctorDashboardPage').then((m) => ({ default: m.DoctorDashboardPage })))
 const ExpertPage = lazy(() => import('./pages/expert/ExpertPage'))
 const ChatbotMonitorPage = lazy(() => import('./pages/manager/chatbot-monitor/ChatbotMonitorPage').then((m) => ({ default: m.ChatbotMonitorPage })))
@@ -41,17 +42,17 @@ function ProtectedRoute({ children, roles, loginPath = '/login' }: { children: R
   return children
 }
 
-function GuestRoute() {
+function GuestRoute({ chat = false }: { chat?: boolean }) {
   const { error, loading, user } = useAuth()
   if (loading || error) return <PageLoader />
-  return user ? <Navigate to={roleHome[user.role]} replace /> : <AuthPage />
+  return user ? <Navigate to={roleHome[user.role]} replace /> : chat ? <GuestChatPage /> : <AuthPage />
 }
 
 function App() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        <Route path="/" element={<GuestRoute />} />
+        <Route path="/" element={<GuestRoute chat />} />
         <Route path="/login" element={<GuestRoute />} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/policy" element={<Navigate to="/privacy" replace />} />

@@ -117,6 +117,50 @@ export class ChatbotService {
     }
   }
 
+  async guestChat(text: string, history: Array<{ role: 'user' | 'assistant'; content: string }>, response: Response) {
+    const emergency = emergencyGuidance(text);
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    const model = emergency ? null : await this.settings.activeModel();
+    if (!emergency && (!apiKey || !model)) throw new ServiceUnavailableException('Serene AI is temporarily unavailable.');
+    const abort = new AbortController();
+    const timeout = setTimeout(() => abort.abort(), 90_000);
+    const onClose = () => { if (!response.writableFinished) abort.abort(); };
+    response.on('close', onClose);
+    try {
+      if (emergency) {
+        const stream = createUIMessageStream({
+          execute: ({ writer }) => {
+            const id = randomUUID();
+            writer.write({ type: 'start', messageId: id });
+            writer.write({ type: 'text-start', id });
+            writer.write({ type: 'text-delta', id, delta: emergency });
+            writer.write({ type: 'text-end', id });
+            writer.setOutcome({ status: 'completed' });
+          },
+        });
+        await pipeUIMessageStreamToResponse({ response, stream });
+      } else {
+        const openrouter = createOpenAI({ apiKey, baseURL: process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1' });
+        const result = streamText({
+          model: openrouter(model!),
+          system: `${SERENE_SYSTEM_PROMPT}\nThis user is an unauthenticated guest. Only general health guidance is available. You have no tools, profile, clinic data or booking access. Do not claim to save conversations or access records. If account features are needed, ask the user to sign in. Current UTC time: ${new Date().toISOString()}.`,
+          messages: [...history, { role: 'user', content: text }],
+          maxOutputTokens: 1600, abortSignal: abort.signal, maxRetries: 1,
+        });
+        await pipeUIMessageStreamToResponse({
+          response,
+          stream: toUIMessageStream({
+            stream: result.stream, sendReasoning: false,
+            onError: () => 'Serene AI is temporarily unavailable. Please retry later or contact the clinic.',
+          }),
+        });
+      }
+    } finally {
+      clearTimeout(timeout);
+      response.off('close', onClose);
+    }
+  }
+
   private async autoGenerateTitle(
     conversationId: string,
     text: string,

@@ -24,6 +24,7 @@ Serene Health là ứng dụng web hỗ trợ hỏi đáp sức khỏe ban đầ
 
 ## MVP hiện có gì?
 
+- **Chat ngay không cần đăng nhập** tại trang chủ: chỉ hỏi đáp sức khỏe, không tạo phiên, không lưu lịch sử vào database; tải lại hoặc rời trang sẽ mất nội dung. Nội dung chat vẫn được gửi tới nhà cung cấp AI để tạo phản hồi. Chế độ khách giới hạn 5 yêu cầu/phút/IP, không truy cập hồ sơ hay các công cụ chức năng.
 - **Đăng ký và đăng nhập** để sử dụng không gian trò chuyện cá nhân.
 - **Hỏi đáp sức khỏe bằng tiếng Việt**, hỗ trợ tìm hiểu triệu chứng và định hướng chăm sóc ban đầu.
 - **Phản hồi dạng streaming**, hiển thị nội dung dần khi AI trả lời; có thể dừng phản hồi đang tạo.
