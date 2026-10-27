@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport, type UIMessage } from 'ai'
-import { API_URL, getAccessToken } from '../../api/client'
+import { API_URL, getAccessToken, refreshAccessToken } from '../../api/client'
 import { useApi } from '../../api/useApi'
 import { ChatBubble } from '../../components/chat/ChatBubble'
 import { ChatbotFeaturesPopover } from './ChatbotFeaturesPopover'
@@ -164,6 +164,20 @@ export function ChatSession({
       new DefaultChatTransport({
         api: `${API_URL}/ai/${guest ? 'guest/chat' : 'chat'}`,
         headers: (): Record<string, string> => guest ? {} : { Authorization: `Bearer ${getAccessToken()}` },
+        fetch: async (input, init) => {
+          let response = await fetch(input, init)
+          if (response.status === 401 && !guest) {
+            try {
+              const freshToken = await refreshAccessToken()
+              const headers = new Headers(init?.headers)
+              headers.set('Authorization', `Bearer ${freshToken}`)
+              response = await fetch(input, { ...init, headers })
+            } catch {
+              // let 401 pass through
+            }
+          }
+          return response
+        },
         prepareSendMessagesRequest: ({ messages }) => {
           const last = messages.at(-1)
           return {
@@ -252,12 +266,21 @@ export function ChatSession({
       input.style.height = ''
       if (window.matchMedia('(max-width: 640px)').matches) {
         input.style.height = '0px'
-        input.style.height = `${text ? Math.min(input.scrollHeight, window.innerHeight * 0.2, 120) : 44}px`
+        input.style.height = `${textareaRef.current?.value ? Math.min(input.scrollHeight, window.innerHeight * 0.2, 120) : 44}px`
       }
     }
-    resize()
     window.addEventListener('resize', resize)
     return () => window.removeEventListener('resize', resize)
+  }, [])
+
+  useEffect(() => {
+    const input = textareaRef.current
+    if (!input) return
+    input.style.height = ''
+    if (window.matchMedia('(max-width: 640px)').matches) {
+      input.style.height = '0px'
+      input.style.height = `${text ? Math.min(input.scrollHeight, window.innerHeight * 0.2, 120) : 44}px`
+    }
   }, [text])
 
   return (

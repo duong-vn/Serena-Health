@@ -279,6 +279,7 @@ export const SCHEDULE_DATA: Record<string, Shift[]> = new Proxy(baseScheduleData
       });
     }
 
+    target[prop] = shifts;
     return shifts;
   }
 }) as unknown as Record<string, Shift[]>;

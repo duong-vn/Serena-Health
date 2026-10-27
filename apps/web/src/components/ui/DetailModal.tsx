@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import './DetailModal.css'
 
 export type DetailModalProps = {
@@ -10,6 +10,15 @@ export type DetailModalProps = {
 }
 
 export function DetailModal({ title, subtitle, open, onClose, children }: DetailModalProps) {
+  useEffect(() => {
+    if (!open) return
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [open, onClose])
+
   if (!open) {
     return null
   }

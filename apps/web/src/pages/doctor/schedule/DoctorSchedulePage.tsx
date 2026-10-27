@@ -32,8 +32,8 @@ const SchedulePage = ({ onBackToDashboard }: { onBackToDashboard?: () => void })
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
   })
 
-  const { data, error, loading } = useApi<ScheduleList>('/doctor/schedule')
-  const schedules = data?.items || []
+  const { data, error, loading } = useApi<ApiScheduleItem[] | { items: ApiScheduleItem[] }>('/doctor/schedule')
+  const schedules = Array.isArray(data) ? data : data?.items || []
 
   const currentDayOfWeek = useMemo(() => {
     const [year, month, day] = selectedDate.split('-').map(Number)

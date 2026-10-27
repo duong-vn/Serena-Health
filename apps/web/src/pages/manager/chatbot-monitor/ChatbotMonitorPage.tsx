@@ -49,8 +49,8 @@ function toUiMessage(msg: ApiMessage): ChatMessage {
 }
 
 export function ChatbotMonitorPage() {
-  const { data, error, loading } = useApi<{ items: ApiConsultationItem[] }>('/consultations')
-  const consultations = data?.items || []
+  const { data, error, loading } = useApi<ApiConsultationItem[] | { items: ApiConsultationItem[] }>('/consultations')
+  const consultations = Array.isArray(data) ? data : data?.items || []
 
   const [activeConversationId, setActiveConversationId] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -92,9 +92,12 @@ export function ChatbotMonitorPage() {
     }
     let active = true
     setMessagesLoading(true)
-    api<{ items: ApiMessage[] }>(`/consultations/${activeConversationId}/messages`)
+    api<ApiMessage[] | { items: ApiMessage[] }>(`/consultations/${activeConversationId}/messages`)
       .then((res) => {
-        if (active) setMessages(res.items.map(toUiMessage))
+        if (active) {
+          const raw = Array.isArray(res) ? res : res?.items || []
+          setMessages(raw.map(toUiMessage))
+        }
       })
       .catch(() => {
         if (active) setMessages([])

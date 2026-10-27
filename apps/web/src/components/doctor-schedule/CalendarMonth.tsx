@@ -81,13 +81,23 @@ const CalendarMonth = ({ selectedDate, onDateSelect, className }: CalendarMonthP
                     return (
                         <div
                             key={day}
-                            className={`calendar-day 
-                                ${isSelected ? 'selected' : ''} 
-                                ${isToday ? 'today' : ''} 
-                                ${hasWorkSchedule ? 'has-schedule' : ''} 
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Ngày ${day} tháng ${currentMonth + 1}${hasWorkSchedule ? ' - Có lịch làm việc' : ''}`}
+                            aria-pressed={isSelected}
+                            className={`calendar-day
+                                ${isSelected ? 'selected' : ''}
+                                ${isToday ? 'today' : ''}
+                                ${hasWorkSchedule ? 'has-schedule' : ''}
                                 ${(dayOfWeek === 0 || dayOfWeek === 6) ? 'weekend' : ''}`
                             }
                             onClick={() => onDateSelect(dateStr)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault()
+                                    onDateSelect(dateStr)
+                                }
+                            }}
                         >
                             <span className="day-number">{day}</span>
                             {hasWorkSchedule && hasAppointments && <div className="event-dot"></div>}

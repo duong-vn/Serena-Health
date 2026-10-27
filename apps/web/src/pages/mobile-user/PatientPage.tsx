@@ -523,8 +523,13 @@ export default function PatientPage() {
 
               {appointments.loading && <p style={{ color: 'var(--sh-text-muted)', padding: '24px 0' }}>Đang tải lịch hẹn…</p>}
               {appointments.error && <p role="alert" style={{ color: 'var(--sh-danger)', padding: '12px 0' }}>{appointments.error.message}</p>}
+              {error && tab === 'appointments' && (
+                <div role="alert" style={{ margin: '0 0 12px', padding: '10px 16px', background: 'var(--sh-danger-bg)', border: '1px solid rgba(186, 60, 60, 0.2)', borderRadius: '10px', color: 'var(--sh-danger)', fontSize: '13px' }}>
+                  {error}
+                </div>
+              )}
 
-              {!appointments.loading && !appointments.data?.length && (
+              {!appointments.loading && !appointments.error && !appointments.data?.length && (
                 <div style={{ textAlign: 'center', padding: '48px 20px' }}>
                   <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--sh-forest-deep)', margin: '0 0 8px' }}>Chưa có lịch hẹn nào</h3>
                   <p style={{ fontSize: '13.5px', color: 'var(--sh-text-muted)', marginBottom: '20px' }}>Đặt lịch ngay để được bác sĩ chuyên khoa tư vấn trực tiếp.</p>
@@ -612,6 +617,12 @@ export default function PatientPage() {
                 </button>
               </div>
 
+              {error && tab === 'profile' && (
+                <div role="alert" style={{ margin: '0 0 16px', padding: '10px 16px', background: 'var(--sh-danger-bg)', border: '1px solid rgba(186, 60, 60, 0.2)', borderRadius: '10px', color: 'var(--sh-danger)', fontSize: '13px' }}>
+                  {error}
+                </div>
+              )}
+
               {profile.loading ? (
                 <p style={{ color: 'var(--sh-text-muted)', padding: '24px 0' }}>Đang tải hồ sơ…</p>
               ) : profile.error ? (
@@ -634,7 +645,7 @@ export default function PatientPage() {
                       await api('/profile', {
                         method: 'PATCH',
                         body: JSON.stringify({
-                          bloodType: form.get('bloodType') || undefined,
+                          bloodType: form.get('bloodType') ? String(form.get('bloodType')).trim() : '',
                           allergies: lines('allergies'),
                           medicalHistory: lines('medicalHistory'),
                         }),

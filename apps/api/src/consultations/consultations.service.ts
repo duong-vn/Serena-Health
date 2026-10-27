@@ -74,6 +74,14 @@ export class ConsultationsService {
   }
 
   async messages(actor: AuthUser, consultationId: string) {
+    if (actor.role === Role.MANAGER) {
+      const consultation = await this.prisma.consultation.findUnique({
+        where: { id: consultationId },
+        select: { id: true, conversationId: true },
+      });
+      if (!consultation) throw new NotFoundException('Consultation not found');
+      return this.prisma.message.findMany({ where: { conversationId: consultation.conversationId }, orderBy: [{ createdAt: 'asc' }, { id: 'asc' }] });
+    }
     const consultation = await this.assertParticipant(actor, consultationId);
     return this.prisma.message.findMany({ where: { conversationId: consultation.conversationId }, orderBy: [{ createdAt: 'asc' }, { id: 'asc' }] });
   }

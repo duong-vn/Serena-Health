@@ -62,34 +62,49 @@ interface DoctorsDataContextValue {
 const DoctorsDataContext = createContext<DoctorsDataContextValue | null>(null)
 const dayNames = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7']
 
-function toUiDoctor(doctor: ApiDoctor): Doctor {
+function toUiDoctor(raw: any): Doctor {
+  const profile = raw.doctorProfile ? raw.doctorProfile : raw
+  const user = raw.user || (raw.doctorProfile ? raw : {})
+  const fullName = user.fullName || raw.fullName || ''
+  const email = user.email || raw.email || ''
+  const phone = user.phone || raw.phone || ''
+  const gender = user.gender || raw.gender
+  const birthday = user.birthday || raw.birthday
+  const schedules: ApiDoctorSchedule[] = profile.schedules || profile.schedule || []
+  const clinic = profile.clinic || { id: '', name: '' }
+  const service = profile.service || { id: '', name: '', specialty: '' }
+  const isActive = Boolean(user.active !== undefined ? user.active : profile.active)
+
   return {
-    address: doctor.address || '',
+    address: profile.address || '',
     appointmentsToday: 0,
-    avatarColor: doctor.avatarColor || '#dcebff',
-    birthday: doctor.birthday?.slice(0, 10) || '',
-    branch: doctor.clinic.name as Branch,
+    avatarColor: profile.avatarColor || '#dcebff',
+    birthday: typeof birthday === 'string' ? birthday.slice(0, 10) : '',
+    branch: (clinic.name || '') as Branch,
     completionRate: 0,
-    consultationFee: doctor.consultationFee || 0,
+    consultationFee: Number(profile.consultationFee) || 0,
     csat: 0,
-    degree: doctor.degree || '',
-    email: doctor.email,
-    examinationFee: doctor.examinationFee || 0,
-    fullName: doctor.fullName,
-    gender: (doctor.gender === 'FEMALE' ? 'Nữ' : doctor.gender === 'MALE' ? 'Nam' : 'Khác') as Gender,
+    degree: profile.degree || '',
+    email,
+    examinationFee: Number(profile.examinationFee) || 0,
+    fullName,
+    gender: (gender === 'FEMALE' ? 'Nữ' : gender === 'MALE' ? 'Nam' : 'Khác') as Gender,
     hasActiveAppointment: false,
-    hasCurrentShift: doctor.active && doctor.schedule.some((item) => item.active),
-    id: doctor.id,
-    phone: doctor.phone || '',
+    hasCurrentShift: Boolean(isActive && schedules.some((item) => item.active)),
+    id: profile.id || raw.id,
+    phone,
     rating: 0,
     reviews: [],
-    schedule: doctor.schedule.filter((item) => item.active).map((item) => ({ day: dayNames[item.dayOfWeek] || `Ngày ${item.dayOfWeek}`, time: `${item.startTime} - ${item.endTime}` })),
-    shortBio: doctor.biography || '',
-    specialty: (doctor.service.specialty || doctor.specialty) as Specialty,
-    status: doctor.active ? 'online' : 'offline',
+    schedule: schedules.filter((item) => item.active).map((item) => ({
+      day: dayNames[item.dayOfWeek] || `Ngày ${item.dayOfWeek}`,
+      time: `${item.startTime} - ${item.endTime}`,
+    })),
+    shortBio: profile.biography || '',
+    specialty: (service.specialty || service.name || profile.specialty || '') as Specialty,
+    status: isActive ? 'online' : 'offline',
     totalConsultations: 0,
-    username: doctor.email,
-    yearsExperience: doctor.yearsExperience || 0,
+    username: email,
+    yearsExperience: Number(profile.yearsExperience) || 0,
   }
 }
 
@@ -99,7 +114,7 @@ function toApiInput(values: DoctorFormValues, clinics: ClinicItem[], services: S
   if (!clinic || !service) throw new Error('Chi nhánh hoặc dịch vụ đã chọn không còn khả dụng.')
 
   return {
-    active: values.hasCurrentShift,
+    ...(!includePassword ? { active: values.hasCurrentShift } : {}),
     address: values.address.trim() || undefined,
     biography: values.shortBio.trim() || undefined,
     birthday: values.birthday || undefined,
@@ -132,14 +147,17 @@ export function DoctorsDataProvider({ children }: { children: ReactNode }) {
     setLoading(true)
     setError(null)
     Promise.all([
-      api<DoctorListPayload>('/manager/doctors?page=1&pageSize=100'),
-      api<CatalogPayload<ClinicItem>>('/catalog/clinics'),
-      api<CatalogPayload<ServiceItem>>('/catalog/services'),
+      api<DoctorListPayload | any[]>('/manager/doctors?page=1&pageSize=100'),
+      api<ClinicItem[] | CatalogPayload<ClinicItem>>('/catalog/clinics'),
+      api<ServiceItem[] | CatalogPayload<ServiceItem>>('/catalog/services'),
     ]).then(([doctorData, clinicData, serviceData]) => {
       if (!active) return
-      setDoctors(doctorData.items.map(toUiDoctor))
-      setClinics(clinicData.items)
-      setServices(serviceData.items)
+      const rawDoctors = Array.isArray(doctorData) ? doctorData : (doctorData as DoctorListPayload).items || []
+      const rawClinics = Array.isArray(clinicData) ? clinicData : (clinicData as CatalogPayload<ClinicItem>).items || []
+      const rawServices = Array.isArray(serviceData) ? serviceData : (serviceData as CatalogPayload<ServiceItem>).items || []
+      setDoctors(rawDoctors.map(toUiDoctor))
+      setClinics(rawClinics)
+      setServices(rawServices)
     }).catch((nextError: unknown) => {
       if (active) setError(nextError instanceof Error ? nextError : new Error('Không thể tải danh sách bác sĩ.'))
     }).finally(() => {
@@ -150,7 +168,7 @@ export function DoctorsDataProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<DoctorsDataContextValue>(() => ({
     addDoctor: async (values) => {
-      const created = await api<ApiDoctor>('/manager/doctors', { body: JSON.stringify(toApiInput(values, clinics, services, true)), method: 'POST' })
+      const created = await api<any>('/manager/doctors', { body: JSON.stringify(toApiInput(values, clinics, services, true)), method: 'POST' })
       const doctor = toUiDoctor(created)
       setDoctors((current) => [doctor, ...current])
       return doctor

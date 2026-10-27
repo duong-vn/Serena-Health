@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useApi } from '../../../api/useApi'
 import { DataTable, type DataTableColumn } from '../../../components/ui/DataTable'
@@ -13,6 +13,23 @@ import './PatientListTab.css'
 interface ApiPatient {
   id: string
   fullName: string
+  phone: string | null
+  gender: string | null
+  birthday: string | null
+  address?: string | null
+  medicalHistory?: string[]
+  allergies?: string[]
+  patientProfile?: {
+    address?: string | null
+    allergies?: string[]
+    medicalHistory?: string[]
+    bloodType?: string | null
+  } | null
+}
+
+interface NormalizedPatient {
+  id: string
+  fullName: string
   phone: string
   gender: string
   birthday: string
@@ -20,8 +37,6 @@ interface ApiPatient {
   medicalHistory: string[]
   allergies: string[]
 }
-
-interface PatientList { items: ApiPatient[] }
 
 export function PatientListTab({
   onBackToDashboard,
@@ -32,8 +47,20 @@ export function PatientListTab({
   initialActivePatientId?: string | null
   onClearActivePatient?: () => void
 }) {
-  const { data, error, loading } = useApi<PatientList>('/doctor/patients')
-  const patients = data?.items || []
+  const { data, error, loading } = useApi<ApiPatient[] | { items: ApiPatient[] }>('/doctor/patients')
+  const rawPatients = Array.isArray(data) ? data : data?.items || []
+  const patients: NormalizedPatient[] = useMemo(() => {
+    return rawPatients.map((p) => ({
+      id: p.id,
+      fullName: p.fullName || 'Bệnh nhân',
+      phone: p.phone || '',
+      gender: p.gender || '',
+      birthday: p.birthday || '',
+      address: p.address || p.patientProfile?.address || '',
+      medicalHistory: p.medicalHistory || p.patientProfile?.medicalHistory || [],
+      allergies: p.allergies || p.patientProfile?.allergies || [],
+    }))
+  }, [rawPatients])
   const [activePatientId, setActivePatientId] = useState<string | null>(initialActivePatientId || null)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('Tất cả')
@@ -45,7 +72,9 @@ export function PatientListTab({
   const activePatient = patients.find((patient) => patient.id === activePatientId)
 
   const filteredPatients = patients.filter((patient) => {
-    const matchesSearch = patient.fullName.toLowerCase().includes(searchTerm.toLowerCase()) || patient.phone.includes(searchTerm)
+    const matchesSearch =
+      patient.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (patient.phone && patient.phone.includes(searchTerm))
     return matchesSearch
   })
 
@@ -90,7 +119,7 @@ export function PatientListTab({
     )
   }
 
-  const columns: Array<DataTableColumn<ApiPatient>> = [
+  const columns: Array<DataTableColumn<NormalizedPatient>> = [
     { key: 'index', header: 'STT', width: '60px', align: 'center', render: (_item, index) => index + 1 },
     { key: 'patient', header: 'Bệnh nhân', width: '240px', render: (item) => (
       <div className="doctor-cell">

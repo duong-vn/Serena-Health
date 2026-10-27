@@ -54,8 +54,8 @@ export function validateDoctorForm(values: DoctorFormValues, doctors: Doctor[], 
   if (!currentDoctorId || values.password || values.confirmPassword) {
     if (!values.password) {
       errors.password = 'Không được bỏ trống trường bắt buộc.'
-    } else if (values.password.length < 8) {
-      errors.password = 'Mật khẩu phải từ 8 kí tự trở lên.'
+    } else if (values.password.length < 10) {
+      errors.password = 'Mật khẩu phải từ 10 kí tự trở lên.'
     }
 
     if (!values.confirmPassword) {

@@ -1,7 +1,7 @@
 .app-sidebar {
   position: fixed;
   inset: 6px auto 6px 8px;
-  z-index: 10px;
+  z-index: 10;
   width: var(--sidebar-width);
   min-height: calc(100vh - 16px);
   display: flex;

@@ -74,15 +74,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     let active = true
-    const session = getAccessToken()
     setLoading(true)
     setError(null)
     api<AuthUser>('/auth/me')
       .then((currentUser) => {
-        if (active && getAccessToken() === session) setUser(currentUser)
+        if (active && getAccessToken()) setUser(currentUser)
       })
       .catch((failure: unknown) => {
-        if (active && getAccessToken() === session) {
+        if (active && getAccessToken()) {
           setError(failure instanceof Error ? failure.message : 'Không thể xác thực phiên. Vui lòng thử lại.')
         }
       })

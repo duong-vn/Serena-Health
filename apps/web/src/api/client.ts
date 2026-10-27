@@ -43,7 +43,7 @@ function errorMessage(body: ApiErrorBody | null, status: number) {
 // Single-flight: concurrent 401s share one refresh request.
 let refreshPromise: Promise<string> | null = null
 
-function refreshAccessToken(): Promise<string> {
+export function refreshAccessToken(): Promise<string> {
   if (!refreshPromise) {
     refreshPromise = (async () => {
       const response = await fetch(`${API_URL}/auth/refresh`, { credentials: 'include', method: 'POST' })
@@ -87,6 +87,9 @@ async function send<T>(path: string, options: RequestInit, token: string | null)
   }
 
   if (body === null) {
+    if (response.status === 204 || response.headers.get('content-length') === '0' || !contentType) {
+      return undefined as T
+    }
     throw new ApiError('Phản hồi từ máy chủ không hợp lệ.', response.status)
   }
 

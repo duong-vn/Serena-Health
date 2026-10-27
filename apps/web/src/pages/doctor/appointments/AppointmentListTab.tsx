@@ -29,8 +29,8 @@ export function AppointmentListTab({
   onBackToDashboard?: () => void
   onViewPatientProfile?: (patientId: string) => void
 }) {
-  const { data, error, loading, reload } = useApi<AppointmentList>('/doctor/appointments')
-  const appointments = data?.items || []
+  const { data, error, loading, reload } = useApi<ApiAppointment[] | { items: ApiAppointment[] }>('/appointments')
+  const appointments = Array.isArray(data) ? data : data?.items || []
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [activeAppointmentId, setActiveAppointmentId] = useState<string | null>(null)
@@ -49,7 +49,7 @@ export function AppointmentListTab({
     if (!activeAppointmentId || !clinicalNotes.trim()) return
     setSubmitting(true)
     try {
-      await api(`/doctor/appointments/${activeAppointmentId}`, {
+      await api(`/appointments/${activeAppointmentId}`, {
         body: JSON.stringify({ notes: clinicalNotes.trim(), status: 'COMPLETED' }),
         method: 'PATCH',
       })

@@ -7,7 +7,7 @@ import './LiveConsultationTab.css'
 
 interface ApiConsultation {
   id: string
-  status: 'OPEN' | 'CLAIMED' | 'COMPLETED'
+  status: 'AI_CHAT' | 'ESCALATION_REQUESTED' | 'ASSIGNED_TO_DOCTOR' | 'DOCTOR_CHAT' | 'COMPLETED' | 'OPEN' | 'CLAIMED' | string
   summary: string | null
   reason: string | null
   notes: string | null
@@ -28,13 +28,17 @@ export function LiveConsultationTab({
   initialActiveChatId?: string | null
   onClearActiveChat?: () => void
 }) {
-  const { data, loading, reload } = useApi<ConsultationList>('/doctor/consultations')
-  const consultations = data?.items || []
+  const { data, loading, reload } = useApi<ApiConsultation[] | { items: ApiConsultation[] }>('/doctor/consultations')
+  const consultations = Array.isArray(data) ? data : data?.items || []
   const [activeChatId, setActiveChatId] = useState<string | null>(initialActiveChatId || null)
   const [inputMessage, setInputMessage] = useState('')
   const [notes, setNotes] = useState('')
   const [isClaiming, setIsClaiming] = useState(false)
   const [isCompleting, setIsCompleting] = useState(false)
+
+  useEffect(() => {
+    setInputMessage('')
+  }, [activeChatId])
 
   const activeConsultation = consultations.find((c) => c.id === activeChatId)
 
@@ -87,7 +91,8 @@ export function LiveConsultationTab({
     setInputMessage('')
   }
 
-  const isClaimedByMe = activeConsultation?.status === 'CLAIMED'
+  const isOpenForClaim = activeConsultation?.status === 'OPEN' || activeConsultation?.status === 'ESCALATION_REQUESTED'
+  const isClaimedByMe = activeConsultation?.status === 'CLAIMED' || activeConsultation?.status === 'ASSIGNED_TO_DOCTOR' || activeConsultation?.status === 'DOCTOR_CHAT'
 
   return (
     <div className="consultation-tab-outer" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', minHeight: '0' }}>
@@ -105,6 +110,8 @@ export function LiveConsultationTab({
             {!loading && consultations.length === 0 ? <p className="doctor-data-state">Không có ca tư vấn nào.</p> : null}
             {consultations.map((c) => {
               const isActive = c.id === activeChatId
+              const isWaiting = c.status === 'OPEN' || c.status === 'ESCALATION_REQUESTED'
+              const isInProgress = c.status === 'CLAIMED' || c.status === 'ASSIGNED_TO_DOCTOR' || c.status === 'DOCTOR_CHAT'
               return (
                 <div key={c.id} className={`consultation-card ${isActive ? 'active' : ''}`} onClick={() => { setActiveChatId(c.id); onClearActiveChat?.(); }}>
                   <div className="consultation-card-avatar" style={{ display: 'grid', placeItems: 'center', backgroundColor: '#E6EFFE', color: '#244a6b' }}>
@@ -116,8 +123,8 @@ export function LiveConsultationTab({
                       <span className="consultation-card-time">{new Date(c.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                     <div className="consultation-card-message">{c.reason || 'Yêu cầu hỗ trợ'}</div>
-                    <div className="consultation-card-badge" style={{ backgroundColor: c.status === 'OPEN' ? '#3b82f6' : c.status === 'CLAIMED' ? '#10b981' : '#6b7280' }}>
-                      {c.status === 'OPEN' ? 'Chờ nhận' : c.status === 'CLAIMED' ? 'Đang trao đổi' : 'Đã xong'}
+                    <div className="consultation-card-badge" style={{ backgroundColor: isWaiting ? '#3b82f6' : isInProgress ? '#10b981' : '#6b7280' }}>
+                      {isWaiting ? 'Chờ nhận' : isInProgress ? 'Đang trao đổi' : 'Đã xong'}
                     </div>
                   </div>
                 </div>
@@ -139,7 +146,7 @@ export function LiveConsultationTab({
                     <p>Trạng thái: {activeConsultation.status} (Socket: {socketStatus})</p>
                   </div>
                 </div>
-                {activeConsultation.status === 'OPEN' ? (
+                {isOpenForClaim ? (
                   <button className="start-consultation-btn" disabled={isClaiming} onClick={handleClaim}>
                     {isClaiming ? 'Đang tiếp nhận...' : 'Tiếp nhận ca'}
                   </button>

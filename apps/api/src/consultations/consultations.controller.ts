@@ -38,7 +38,7 @@ export class ConsultationsController {
   @Patch(':id/complete')
   complete(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string, @Body() input: CompleteDto) { return this.consultations.complete(user.id, id, input); }
 
-  @Roles(Role.PATIENT, Role.DOCTOR)
+  @Roles(Role.PATIENT, Role.DOCTOR, Role.MANAGER)
   @Get(':id/messages')
   messages(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) { return this.consultations.messages(user, id); }
 

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { io, type Socket } from 'socket.io-client'
 
-import { API_URL, getAccessToken } from '../api/client'
+import { api, API_URL, getAccessToken } from '../api/client'
 
 type SocketStatus = 'disconnected' | 'connecting' | 'connected' | 'error'
 
@@ -24,28 +25,26 @@ interface UseChatSocketResult {
   disconnect: () => void
 }
 
-// ponytail: manual WebSocket over socket.io-client since dep not installed.
-// upgrade when socket.io-client is available in node_modules.
 export function useChatSocket({ consultationId }: UseChatSocketOptions): UseChatSocketResult {
   const [status, setStatus] = useState<SocketStatus>('disconnected')
   const [messages, setMessages] = useState<ChatMessage[]>([])
-  const wsRef = useRef<WebSocket | null>(null)
+  const socketRef = useRef<Socket | null>(null)
 
   const disconnect = useCallback(() => {
-    wsRef.current?.close()
-    wsRef.current = null
+    socketRef.current?.disconnect()
+    socketRef.current = null
     setStatus('disconnected')
   }, [])
 
   const sendMessage = useCallback((content: string) => {
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN || !consultationId) return
-    wsRef.current.send(JSON.stringify({ event: 'send', data: { consultationId, content } }))
+    if (!socketRef.current || !consultationId || !content.trim()) return
+    socketRef.current.emit('send', { consultationId, content: content.trim() })
   }, [consultationId])
 
   useEffect(() => {
+    setMessages([])
     if (!consultationId) {
       disconnect()
-      setMessages([])
       return
     }
 
@@ -55,50 +54,54 @@ export function useChatSocket({ consultationId }: UseChatSocketOptions): UseChat
       return
     }
 
-    const configuredWs = import.meta.env?.VITE_WS_URL
-    let wsUrl: string
-    if (configuredWs) {
-      const trimmed = configuredWs.replace(/\/$/, '')
-      wsUrl = `${trimmed}/human-chat?token=${encodeURIComponent(token)}`
-    } else {
-      const baseUrl = API_URL.startsWith('http')
-        ? API_URL
-        : `${window.location.origin}${API_URL.startsWith('/') ? '' : '/'}${API_URL}`
-      wsUrl = baseUrl.replace(/^http/, 'ws').replace(/\/api\/v1$/, '') + `/human-chat?token=${encodeURIComponent(token)}`
-    }
+    let active = true
+
+    // Fetch prior messages
+    api<ChatMessage[]>(`/consultations/${consultationId}/messages`)
+      .then((history) => {
+        if (!active) return
+        const list = Array.isArray(history) ? history : []
+        setMessages((prev) => {
+          const ids = new Set(prev.map((m) => m.id))
+          const unadded = list.filter((m) => !ids.has(m.id))
+          return [...unadded, ...prev]
+        })
+      })
+      .catch(() => {})
+
+    const baseUrl = API_URL.startsWith('http')
+      ? API_URL.replace(/\/api\/v1$/, '')
+      : window.location.origin
 
     setStatus('connecting')
-    const ws = new WebSocket(wsUrl)
-    wsRef.current = ws
+    const socket = io(`${baseUrl}/human-chat`, {
+      auth: { token },
+      transports: ['websocket'],
+    })
+    socketRef.current = socket
 
-    ws.addEventListener('open', () => {
-      ws.send(JSON.stringify({ event: 'join', data: { consultationId } }))
+    socket.on('connect', () => {
       setStatus('connected')
+      socket.emit('join', { consultationId })
     })
 
-    ws.addEventListener('message', (event) => {
-      try {
-        const parsed = JSON.parse(event.data)
-        if (parsed.event === 'message') {
-          setMessages((prev) => [...prev, parsed.data as ChatMessage])
-        }
-        if (parsed.event === 'joined') {
-          setStatus('connected')
-        }
-        if (parsed.event === 'error') {
-          // keep connected, surface errors via message
-        }
-      } catch {
-        // ignore parse failures
-      }
+    socket.on('message', (incoming: ChatMessage) => {
+      if (!incoming?.id) return
+      setMessages((prev) => (prev.some((m) => m.id === incoming.id) ? prev : [...prev, incoming]))
     })
 
-    ws.addEventListener('error', () => setStatus('error'))
-    ws.addEventListener('close', () => setStatus('disconnected'))
+    socket.on('connect_error', () => {
+      setStatus('error')
+    })
+
+    socket.on('disconnect', () => {
+      setStatus('disconnected')
+    })
 
     return () => {
-      ws.close()
-      wsRef.current = null
+      active = false
+      socket.disconnect()
+      socketRef.current = null
     }
   }, [consultationId, disconnect])
 

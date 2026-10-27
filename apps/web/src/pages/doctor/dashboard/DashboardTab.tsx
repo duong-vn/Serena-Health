@@ -59,14 +59,18 @@ export function DashboardTab({
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
   })
 
-  const { data: appointmentData, loading: apptLoading } = useApi<AppointmentList>('/doctor/appointments?status=PENDING')
-  const { data: consultationData, loading: consultLoading } = useApi<ConsultationList>('/doctor/consultations')
-  const { data: patientData } = useApi<PatientList>('/doctor/patients')
+  const { data: appointmentData, loading: apptLoading } = useApi<ApiAppointment[] | { items: ApiAppointment[] }>('/appointments')
+  const { data: consultationData, loading: consultLoading } = useApi<ApiConsultation[] | { items: ApiConsultation[] }>('/doctor/consultations')
+  const { data: patientData } = useApi<ApiPatient[] | { items: ApiPatient[] }>('/doctor/patients')
 
-  const pendingAppointments = appointmentData?.items || []
-  const openConsultations = consultationData?.items.filter((item) => item.status === 'OPEN' || item.status === 'CLAIMED') || []
-  const completedConsultations = consultationData?.items.filter((item) => item.status === 'COMPLETED') || []
-  const totalPatients = patientData?.items.length ?? 0
+  const appointmentsList = Array.isArray(appointmentData) ? appointmentData : appointmentData?.items || []
+  const consultationsList = Array.isArray(consultationData) ? consultationData : consultationData?.items || []
+  const patientsList = Array.isArray(patientData) ? patientData : patientData?.items || []
+
+  const pendingAppointments = appointmentsList.filter((item) => item.status === 'PENDING')
+  const openConsultations = consultationsList.filter((item) => ['OPEN', 'CLAIMED', 'ESCALATION_REQUESTED', 'ASSIGNED_TO_DOCTOR', 'DOCTOR_CHAT'].includes(item.status))
+  const completedConsultations = consultationsList.filter((item) => item.status === 'COMPLETED')
+  const totalPatients = patientsList.length
 
   return (
     <div className="figma-dashboard-tab">
@@ -90,8 +94,8 @@ export function DashboardTab({
             </div>
             <div className="list-container">
               {apptLoading ? <p className="doctor-data-state" role="status">Đang tải...</p> : null}
-              {!apptLoading && !patientData?.items.length ? <p className="doctor-data-state">Chưa có bệnh nhân.</p> : null}
-              {(patientData?.items || []).slice(0, 3).map((patient) => (
+              {!apptLoading && !patientsList.length ? <p className="doctor-data-state">Chưa có bệnh nhân.</p> : null}
+              {patientsList.slice(0, 3).map((patient) => (
                 <div className="patient-list-row" key={patient.id}>
                   <div className="row-left">
                     <div className="avatar-placeholder" style={{ display: 'grid', placeItems: 'center', backgroundColor: '#E6EFFE', color: '#244a6b', border: '1px solid rgba(36, 74, 107, 0.12)' }}>
