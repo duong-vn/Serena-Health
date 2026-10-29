@@ -1976,7 +1976,7 @@
 .patient-response-status {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 8px;
   padding: 8px 24px;
   background: var(--sh-cream-panel);

@@ -361,14 +361,13 @@ export function ChatSession({
         )}
 
         {(() => {
-          let lastAssistantId: string | undefined
-          for (let i = messages.length - 1; i >= 0; i--) {
-            if (messages[i].role === 'assistant') {
-              lastAssistantId = messages[i].id
-              break
-            }
-          }
-          return messages.map((message) => {
+          const lastMessage = messages.at(-1)
+          const showThinking = busy && (
+            lastMessage?.role !== 'assistant' ||
+            !lastMessage.parts.some((part) => part.type === 'text' && part.text.trim())
+          )
+          return <>
+          {messages.map((message) => {
             const content = message.parts
               .filter((part) => part.type === 'text')
               .map((part) => part.text)
@@ -383,8 +382,10 @@ export function ChatSession({
                   time: times[message.id] || '',
                 }}
               />
-            ) : (message.role === 'assistant' && message.id === lastAssistantId ? (
-              <div key={message.id} className="chat-bubble-row chat-bubble-row-chatbot">
+            ) : null
+          })}
+          {showThinking && (
+              <div className="chat-bubble-row chat-bubble-row-chatbot">
                 <div className="chat-bubble-avatar">
                   <span className="chat-avatar chat-avatar-bot" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
@@ -398,8 +399,8 @@ export function ChatSession({
                   <span className="chat-typing-dots" aria-hidden="true"><i /><i /><i /></span>
                 </div>
               </div>
-            ) : null)
-          })
+          )}
+          </>
         })()}
         </div>
       </div>
@@ -430,8 +431,7 @@ export function ChatSession({
       )}
 
       {busy && (
-        <div className="patient-response-status" role="status">
-          <span>Serene đang xử lý câu trả lời…</span>
+        <div className="patient-response-status">
           <button
             type="button"
             className="patient-response-stop"

@@ -17,9 +17,14 @@ test('FormattedChatText is memoized and provides fast path for non-markdown text
   assert.ok(formattedTextSrc.includes("!text.includes('*') && !text.includes('`')"), 'Expected fast path skipping regex for plain tokens')
 })
 
-test('PatientChat computes last assistant message once without O(N^2) search', () => {
-  assert.ok(!patientChatSrc.includes('[...messages].reverse().find'), 'Expected no O(N^2) array reversal inside messages.map')
-  assert.ok(patientChatSrc.includes('for (let i = messages.length - 1; i >= 0; i--)'), 'Expected efficient backwards scan outside or before loop')
+test('PatientChat checks only the latest message for the thinking bubble', () => {
+  assert.ok(!patientChatSrc.includes('[...messages].reverse().find'), 'Expected no array reversal inside messages.map')
+  assert.ok(patientChatSrc.includes('const lastMessage = messages.at(-1)'), 'Expected constant-time latest message lookup')
+  assert.match(patientChatSrc, /const showThinking = busy &&/, 'Thinking must stop on completion, error or cancellation')
+  assert.match(patientChatSrc, /lastMessage\?\.role !== 'assistant' \|\|/, 'Show thinking while waiting for an assistant message')
+  assert.match(patientChatSrc, /!lastMessage.parts.some\(\(part\) => part.type === 'text' && part.text.trim\(\)\)/, 'Hide thinking once assistant text arrives')
+  assert.equal(patientChatSrc.split('chat-bubble-typing').length - 1, 1, 'Render only one thinking bubble')
+  assert.doesNotMatch(patientChatSrc, /Serene đang xử lý câu trả lời/, 'Do not show a duplicate status beside the composer')
 })
 
 test('PatientChat formats timestamps on message arrival rather than per-chunk render', () => {
