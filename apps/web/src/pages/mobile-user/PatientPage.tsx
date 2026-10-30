@@ -88,9 +88,9 @@ export default function PatientPage() {
     }
   }, [sidebarOpen])
 
-  const conversations = useApi<Conversation[]>('/conversations')
-  const appointments = useApi<Appointment[]>('/appointments')
-  const profile = useApi<Profile>('/profile')
+  const conversations = useApi<Conversation[]>('/conversations', true)
+  const appointments = useApi<Appointment[]>(tab === 'appointments' ? '/appointments' : null)
+  const profile = useApi<Profile>(tab === 'profile' ? '/profile' : null)
 
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -216,7 +216,7 @@ export default function PatientPage() {
         </div>
 
         <div className="conversation-scroll-sanctuary">
-          {conversations.loading && (
+          {conversations.loading && !conversations.data && (
             <p style={{ padding: '16px', color: 'var(--sh-text-muted)', fontSize: '13px' }}>
               Đang tải lịch sử…
             </p>

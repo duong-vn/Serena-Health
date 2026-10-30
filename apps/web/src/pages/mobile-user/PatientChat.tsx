@@ -204,16 +204,17 @@ export function ChatSession({
     [conversationId, guest]
   )
 
-  const initialMessages: UIMessage[] = initial
+  const initialMessages = useMemo<UIMessage[]>(() => initial
     .filter((item) => item.role === 'USER' || item.role === 'ASSISTANT')
     .map((item) => ({
       id: item.id,
       role: item.role === 'USER' ? 'user' : 'assistant',
       parts: [{ type: 'text', text: item.content }],
-    }))
+    })), [initial])
 
   const { messages, sendMessage, status, error, stop, clearError } = useChat({
     id: conversationId,
+    throttle: 50,
     messages: initialMessages,
     transport,
     onFinish: () => {
@@ -257,7 +258,7 @@ export function ChatSession({
       }
       return next
     })
-  }, [messages])
+  }, [messages.length])
 
   useEffect(() => {
     const input = textareaRef.current
@@ -430,11 +431,12 @@ export function ChatSession({
         </div>
       )}
 
-      {busy && (
         <div className="patient-response-status">
           <button
             type="button"
             className="patient-response-stop"
+            style={{ visibility: busy ? 'visible' : 'hidden' }}
+            disabled={!busy}
             onClick={() => {
               setStopped(true)
               void stop()
@@ -443,7 +445,6 @@ export function ChatSession({
             Dừng
           </button>
         </div>
-      )}
 
       {/* Modern Composer */}
       <div className="patient-composer-wrapper">

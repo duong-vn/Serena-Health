@@ -27,6 +27,13 @@ test('PatientChat checks only the latest message for the thinking bubble', () =>
   assert.doesNotMatch(patientChatSrc, /Serene đang xử lý câu trả lời/, 'Do not show a duplicate status beside the composer')
 })
 
+test('PatientChat batches streaming updates and reserves stop-control space', () => {
+  assert.match(patientChatSrc, /throttle: 50/, 'Batch streamed tokens instead of rendering every chunk')
+  assert.match(patientChatSrc, /visibility: busy \? 'visible' : 'hidden'/, 'Keep stop-control space when idle')
+  assert.match(patientChatSrc, /disabled=\{!busy\}/, 'Idle stop control must not be interactive')
+  assert.match(patientChatSrc, /\[messages.length\]/, 'Timestamp updates should follow message arrival, not every chunk')
+})
+
 test('PatientChat formats timestamps on message arrival rather than per-chunk render', () => {
   assert.doesNotMatch(patientChatSrc, /times\[message\.id\] \? new Date\(times\[message\.id\]\)/, 'Expected no repeated new Date formatting inside message render loop')
 })

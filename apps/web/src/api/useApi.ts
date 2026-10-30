@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { api } from './client'
 
@@ -9,16 +9,18 @@ export interface UseApiResult<T> {
   reload: () => void
 }
 
-export function useApi<T>(path: string | null): UseApiResult<T> {
+export function useApi<T>(path: string | null, keepDataOnReload = false): UseApiResult<T> {
   const [data, setData] = useState<T | null>(null)
   const [error, setError] = useState<Error | null>(null)
   const [loading, setLoading] = useState(Boolean(path))
   const [requestVersion, setRequestVersion] = useState(0)
+  const previousPath = useRef(path)
 
   const reload = useCallback(() => setRequestVersion((version) => version + 1), [])
 
   useEffect(() => {
     if (!path) {
+      previousPath.current = null
       setData(null)
       setError(null)
       setLoading(false)
@@ -26,7 +28,8 @@ export function useApi<T>(path: string | null): UseApiResult<T> {
     }
 
     const controller = new AbortController()
-    setData(null)
+    if (!keepDataOnReload || previousPath.current !== path) setData(null)
+    previousPath.current = path
     setLoading(true)
     setError(null)
 
@@ -48,7 +51,7 @@ export function useApi<T>(path: string | null): UseApiResult<T> {
       })
 
     return () => controller.abort()
-  }, [path, requestVersion])
+  }, [path, requestVersion, keepDataOnReload])
 
   return { data, error, loading, reload }
 }
